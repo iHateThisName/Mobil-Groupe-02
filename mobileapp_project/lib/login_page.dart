@@ -69,8 +69,9 @@ class LoginPage extends StatelessWidget {
               ) ,
           ),
           ),
-          SizedBox(height: 1.0),
+          SizedBox(height: 10.0),
           SizedBox(
+            height: 50,
             child: CustomElevatedButton(
             child: Text('Logg inn gjennom E-Mail'),
             color: Colors.deepOrangeAccent,
@@ -78,12 +79,16 @@ class LoginPage extends StatelessWidget {
             onPressed: () {},
           ),
           ),
+          SizedBox(
+            height: 10,
+          ),
           Text(
             'eller',
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 1.0),
+          SizedBox(height: 10.0),
           SizedBox(
+            height: 50,
             child: CustomElevatedButton(
               child: Text('Fortsett uten profil'),
               color: Colors.green,
