@@ -1,8 +1,8 @@
 import 'package:mobileapp_project/custom_widgets/custom_elevatedbutton.dart';
-import 'main.dart';
+import 'package:mobileapp_project/sign_in/sign_in_anonymously_code.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatelessWidget with Anonymous {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -12,11 +12,11 @@ class LoginPage extends StatelessWidget {
         title: const Text('Toilet App'),
         elevation: 2.0,
       ),
-      body: _buildContent(),
+      body: _buildContent(context),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(16),
 
@@ -88,7 +88,7 @@ class LoginPage extends StatelessWidget {
               child: Text('Fortsett uten profil'),
               color: Colors.green,
               borderRadius: 5,
-              onPressed: () {},
+              onPressed: () => signInAnonymously(context),
             ),
           ),
 
