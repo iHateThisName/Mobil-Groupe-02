@@ -9,7 +9,6 @@ abstract class AuthBase {
   Future<User?> signInWithEmailAndPassword(String email, String password);
   Future<User?> createUserWithEmailAndPassword(String email, String password);
 
-
 }
 
 class Auth implements AuthBase {
@@ -30,7 +29,6 @@ class Auth implements AuthBase {
   }
 
   //Email
-
   @override
   Future<User?> signInWithEmailAndPassword(
       String email, String password) async {
@@ -49,4 +47,8 @@ class Auth implements AuthBase {
     );
     return userCredential.user;
   }
+
+  //todo Google
+
+  //todo Facebook
 }
