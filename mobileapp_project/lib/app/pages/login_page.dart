@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/app/pages/email_sign_in_page.dart';
+import 'package:mobileapp_project/app/services/authentication.dart';
+import 'package:provider/provider.dart';
 import '../custom_widgets/custom_elevatedbutton.dart';
-import '../sign_in/sign_in_anonymously_code.dart';
 
-class LoginPage extends StatelessWidget with Anonymous {
+class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -72,7 +74,7 @@ class LoginPage extends StatelessWidget with Anonymous {
           CustomElevatedButton(
             color: Colors.deepOrangeAccent,
             borderRadius: 5,
-            onPressed: null,
+            onPressed: () => _logInWithEmail(context),
             child: const SizedBox(
               child: Text('Logg inn gjennom E-Mail'),
             ),
@@ -85,7 +87,7 @@ class LoginPage extends StatelessWidget with Anonymous {
           CustomElevatedButton(
             color: Colors.green,
             borderRadius: 5,
-            onPressed: () => signInAnonymously(context),
+            onPressed: () => _logInAnonymously(context),
             child: const SizedBox(
               child: Text('Fortsett uten profil'),
             ),
@@ -101,7 +103,21 @@ class LoginPage extends StatelessWidget with Anonymous {
   void logInWithFacebook() {
     // TODO: Auth with Google
   }
-  void logInWithEmail() {
-    // TODO: Auth with Google
+  void _logInWithEmail(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (context) => EmailSignInPage(),
+      ),
+    );
+  }
+
+  Future<void> _logInAnonymously(BuildContext context) async {
+    try {
+      final auth = Provider.of<AuthBase>(context, listen: false);
+      await auth.signInAnonymously();
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }
