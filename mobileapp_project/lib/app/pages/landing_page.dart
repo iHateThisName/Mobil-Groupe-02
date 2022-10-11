@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart';
-import '../services/authentication.dart';
 import 'login_page.dart';
 
 class LandingPage extends StatelessWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp_project/app/pages/email_sign_in_page.dart';
-import 'package:mobileapp_project/app/services/authentication.dart';
+import 'package:mobileapp_project/custom_widgets/custom_elevatedbutton.dart';
+import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
-import '../custom_widgets/custom_elevatedbutton.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
