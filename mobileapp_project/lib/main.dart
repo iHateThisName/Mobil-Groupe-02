@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'ToiletApp',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
+        backgroundColor: Colors.grey
       ),
       home: const LoginPage(),
     );

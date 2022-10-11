@@ -1,3 +1,4 @@
+import 'package:mobileapp_project/custom_widgets/custom_elevatedbutton.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
 
@@ -30,15 +31,80 @@ class LoginPage extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 8.0),
-          ElevatedButton(
-              onPressed: () {
-                print('Signs in with Google');
-              },
-              child: Text('Logg inn gjennom Google')
+          SizedBox(height: 16.0),
+          SizedBox(
+            height: 50,
+            child: CustomElevatedButton(
+            color: Colors.blueGrey,
+            borderRadius: 5,
+            onPressed: () {},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Image.asset('images/google-logo.png'),
+                Text('Logg inn gjennom Google'),
+                Opacity(
+                    opacity: 0,
+                    child: Image.asset('images/google-logo.png')),
+              ],
+            ) ,
           ),
+          ),
+          SizedBox(height: 10),
+          SizedBox(
+            height: 50,
+            child: CustomElevatedButton(
+            color: Colors.indigo,
+            borderRadius: 5,
+            onPressed: () {},
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Image.asset('images/facebook-logo.png'),
+                  Text('Logg inn gjennom Facebook'),
+                  Opacity(
+                      opacity: 0,
+                      child: Image.asset('images/facebook-logo.png')),
+                ],
+              ) ,
+          ),
+          ),
+          SizedBox(height: 1.0),
+          SizedBox(
+            child: CustomElevatedButton(
+            child: Text('Logg inn gjennom E-Mail'),
+            color: Colors.deepOrangeAccent,
+            borderRadius: 5,
+            onPressed: () {},
+          ),
+          ),
+          Text(
+            'eller',
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 1.0),
+          SizedBox(
+            child: CustomElevatedButton(
+              child: Text('Fortsett uten profil'),
+              color: Colors.green,
+              borderRadius: 5,
+              onPressed: () {},
+            ),
+          ),
+
         ],
       ),
     );
   }
+
+  void logInWithGoogle() {
+    // TODO: Auth with Google
+  }
+  void logInWithFacebook() {
+    // TODO: Auth with Google
+  }
+  void logInWithEmail() {
+    // TODO: Auth with Google
+  }
+
   }
