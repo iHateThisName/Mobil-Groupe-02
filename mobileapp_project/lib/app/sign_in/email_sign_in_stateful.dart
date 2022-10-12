@@ -41,10 +41,12 @@ class _EmailSignInState extends State<EmailSignInStateful> {
         await auth.createUserWithEmailAndPassword(_email, _password);
       }
       Navigator.of(context).pop();
+
     } catch (e) {
-      //todo
       print(e.toString());
+
     } finally {
+
       setState(() {
         _isLoading = false;
       });
