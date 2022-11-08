@@ -1,15 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class ProfilePage extends StatefulWidget {
+  ProfilePage({super.key});
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final double _coverImageHeight = 180;
   final double _profileImageSize = 44;
+
+  String _username = "Value was not updated";
 
   Future<void> _signOut(BuildContext context) async {
     try {
@@ -41,13 +49,32 @@ class ProfilePage extends StatelessWidget {
         body: ListView(
           children: [
             buildTopPage(),
-            buildContext(),
-            ElevatedButton(onPressed: () => _createProfileTest(context), child: Text("Create a profile"))
+            buildContext(context),
+            ElevatedButton(
+                onPressed: () => _createProfileTest(context),
+                child: Text("Create a profile"))
           ],
         ));
   }
 
-  Center buildContext() => const Center(child: Text("Retrieve the name of the user"));
+  Center buildContext(BuildContext context) {
+    _getProfile(context);
+    return Center(child: Text(_username));
+  }
+
+  _getProfile(BuildContext context) async {
+
+    try {
+      final database = Provider.of<Database>(context, listen: false);
+      final profile = await database.profileStream();
+
+      setState(() {
+        _username = "This is an update: ${profile?.username}";
+      });
+    } on FirebaseException catch (e) {
+      print(e.stackTrace);
+    }
+  }
 
   Container buildTopPage() {
     return Container(
@@ -86,7 +113,8 @@ class ProfilePage extends StatelessWidget {
   Future<void> _createProfileTest(BuildContext context) async {
     try {
       final database = Provider.of<Database>(context, listen: false);
-      await database.createProfile(Profile(username: "profileNameTest", score: 1));
+      await database
+          .createProfile(Profile(username: "profileNameTest", score: 1));
     } on FirebaseException catch (e) {
       print(e.stackTrace);
     }
