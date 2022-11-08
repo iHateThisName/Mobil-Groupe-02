@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/app/pages/profile_page.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home Page"),
@@ -24,13 +24,23 @@ class HomePage extends StatelessWidget {
           TextButton(
             style: TextButton.styleFrom(
               foregroundColor: Colors.white,
-              textStyle: const TextStyle(fontSize: 18,
+              textStyle: const TextStyle(
+                fontSize: 18,
               ),
             ),
-            onPressed: () => _signOut(context),
-            child: const Text("Sign Out"),
+            onPressed: () => _showProfilePage(context),
+            child: const Text("Profile"),
           )
         ],
+      ),
+    );
+  }
+
+  void _showProfilePage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (context) => ProfilePage(),
       ),
     );
   }
