@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp_project/services/authentication.dart';
+import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart';
 import 'login_page.dart';
@@ -24,7 +25,9 @@ class LandingPage extends StatelessWidget {
             return LoginPage();
           }
           print("Showing the home page");
-          return HomePage();
+          return Provider<Database>(
+              create: (_) => FireStoreDatabase(uid: user.uid),
+              child: HomePage());
         }
         return const Scaffold(
           body: Center(
