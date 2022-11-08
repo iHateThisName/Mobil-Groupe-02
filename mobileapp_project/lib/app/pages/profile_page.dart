@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/services/authentication.dart';
+import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -39,6 +42,7 @@ class ProfilePage extends StatelessWidget {
           children: [
             buildTopPage(),
             buildContext(),
+            ElevatedButton(onPressed: () => _createProfileTest(context), child: Text("Create a profile"))
           ],
         ));
   }
@@ -77,5 +81,14 @@ class ProfilePage extends StatelessWidget {
         fit: BoxFit.cover,
       ),
     );
+  }
+
+  Future<void> _createProfileTest(BuildContext context) async {
+    try {
+      final database = Provider.of<Database>(context, listen: false);
+      await database.createProfile(Profile(username: "profileNameTest", score: 1));
+    } on FirebaseException catch (e) {
+      print(e.stackTrace);
+    }
   }
 }

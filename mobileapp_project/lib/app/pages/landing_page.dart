@@ -25,9 +25,7 @@ class LandingPage extends StatelessWidget {
             return LoginPage();
           }
           print("Showing the home page");
-          return Provider<Database>(
-              create: (_) => FireStoreDatabase(uid: user.uid),
-              child: HomePage());
+          return HomePage(user: user);
         }
         return const Scaffold(
           body: Center(

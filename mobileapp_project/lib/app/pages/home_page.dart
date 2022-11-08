@@ -1,19 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp_project/app/pages/profile_page.dart';
 import 'package:mobileapp_project/services/authentication.dart';
+import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.user});
 
-  Future<void> _signOut(BuildContext context) async {
-    try {
-      final auth = Provider.of<AuthBase>(context, listen: false);
-      await auth.signOut();
-    } catch (e) {
-      print(e.toString());
-    }
-  }
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +35,9 @@ class HomePage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         fullscreenDialog: true,
-        builder: (context) => ProfilePage(),
+        builder: (context) => Provider<Database>(
+            create: (_) => FireStoreDatabase(uid: user.uid),
+            child: ProfilePage()),
       ),
     );
   }
