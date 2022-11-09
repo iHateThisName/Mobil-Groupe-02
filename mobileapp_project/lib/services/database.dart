@@ -4,7 +4,7 @@ import 'package:mobileapp_project/services/api_path.dart';
 
 abstract class Database {
   Future<void> createProfile(Profile profile);
-  Future<Profile?> profileStream();
+  Future<Profile?> getProfile();
 }
 
 class FireStoreDatabase implements Database {
@@ -16,8 +16,8 @@ class FireStoreDatabase implements Database {
   final String uid;
 
   @override
-  Future<Profile?> profileStream() async {
-    final path = APIPath.profile(uid);
+  Future<Profile?> getProfile() async {
+    final path = APIPath.profiles(uid);
     var collection = FirebaseFirestore.instance.collection(path);
     var docSnapshot = await collection.doc("profile").get();
     if (docSnapshot.exists) {
@@ -29,7 +29,7 @@ class FireStoreDatabase implements Database {
 
   @override
   Future<void> createProfile(Profile profile) =>
-      _setData(path: APIPath.profile(uid), data: profile.toMap());
+      _setData(path: APIPath.profile(uid, "profile"), data: profile.toMap());
 
   Future<void> _setData(
       {required String path, required Map<String, dynamic> data}) async {
