@@ -51,8 +51,9 @@ class _ProfilePageState extends State<ProfilePage> {
             buildTopPage(),
             buildContext(context),
             ElevatedButton(
-                onPressed: () => _createProfileTest(context),
-                child: Text("Create a profile"))
+              onPressed: () => _createProfileTest(context),
+              child: Text("Create a profile"),
+            ),
           ],
         ));
   }
@@ -63,10 +64,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   _getProfile(BuildContext context) async {
-
     try {
       final database = Provider.of<Database>(context, listen: false);
-      final profile = await database.profileStream();
+      final profile = await database.getProfile();
 
       setState(() {
         _username = "This is an update: ${profile?.username}";
