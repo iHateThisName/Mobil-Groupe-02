@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "347799616883",
+    "project_id": "toilet-app-project",
+    "storage_bucket": "toilet-app-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347799616883:android:8fcee0cf5991bfb7101906",
+        "android_client_info": {
+          "package_name": "com.example.mobileapp_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "347799616883-am9jkp3qese5drr51p44jag56tn6t5l5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3udQ7FTwe1L-poAbskr0WcCPcLfoxkO4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "347799616883-am9jkp3qese5drr51p44jag56tn6t5l5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
