@@ -44,3 +44,51 @@ class _MapPageState extends State<MapPage> {
   void setInitialLocation() {
     currentLocation = LatLng(SOURCE_LOCATION.latitude, SOURCE_LOCATION.longitude);
   }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    CameraPosition initialCameraPosition = CameraPosition(
+        zoom: CAMERA_ZOOM,
+        tilt: CAMERA_TILT,
+        bearing: CAMERA_BEARING,
+        target: SOURCE_LOCATION
+    );
+    return Scaffold(
+      body: Container(
+        child: Center(
+          child: GoogleMap(
+            myLocationEnabled: true,
+            compassEnabled: false,
+            initialCameraPosition: initialCameraPosition,
+            tiltGesturesEnabled: false,
+            markers: _markers,
+            mapType: MapType.normal,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+
+              showPinsOnMap();
+            },
+
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showPinsOnMap() {
+    setState(() {
+      _markers.add(Marker(
+          markerId: MarkerId('sourcePin'),
+          position: currentLocation,
+          icon: sourceIcon
+      ));
+      _markers.add(Marker(
+          markerId: MarkerId('destinationPin'),
+          position: destinationLocation,
+          icon: destinationIcon
+      ));
+    });
+  }
+}
