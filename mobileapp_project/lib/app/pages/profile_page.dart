@@ -69,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final profile = await database.getProfile();
 
       setState(() {
-        _username = "This is an update: ${profile?.username}";
+        _username = "${profile?.username}";
       });
     } on FirebaseException catch (e) {
       print(e.stackTrace);
