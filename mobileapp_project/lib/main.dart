@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
+import 'app/pages/login_page.dart';
 import 'firebase_options.dart';
 import 'app/pages/landing_page.dart';
 
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blueGrey,
           backgroundColor: Colors.grey
         ),
-        home: LandingPage(),
+        home: LoginPage(),
       ),
     );
   }

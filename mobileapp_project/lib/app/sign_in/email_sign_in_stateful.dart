@@ -96,7 +96,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
       const SizedBox(height: 8.0),
       TextButton(
         style: TextButton.styleFrom(
-          foregroundColor: Colors.black,
+          backgroundColor: Colors.black,
         ),
         onPressed: !_isLoading ? _toggleFormType : null,
         child: Text(secondaryText),
