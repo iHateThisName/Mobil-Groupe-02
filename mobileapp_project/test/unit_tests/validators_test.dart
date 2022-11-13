@@ -12,8 +12,8 @@ void main() {
   test('Empty string', ()
   {
     final passwordValidator = NonEmptyStringValidator();
-    // Checks if it is a non empty string
-    expect(passwordValidator.isValid(''), true);
+    // Checks if it is an empty string
+    expect(passwordValidator.isValid(''), false);
   });
 
 }
