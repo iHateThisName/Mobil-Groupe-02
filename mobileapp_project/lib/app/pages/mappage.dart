@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 
+import '../../custom_widgets/navigation_bar.dart';
+
 
 const LatLng SOURCE_LOCATION = LatLng(62.472229, 6.149482);
 const LatLng DEST_LOCATION = LatLng(62.47219, 6.2357);
@@ -56,25 +58,37 @@ class _MapPageState extends State<MapPage> {
         target: SOURCE_LOCATION
     );
     return Scaffold(
-      body: Container(
-        child: Center(
-          child: GoogleMap(
-            myLocationEnabled: true,
-            compassEnabled: false,
-            initialCameraPosition: initialCameraPosition,
-            tiltGesturesEnabled: false,
-            markers: _markers,
-            mapType: MapType.normal,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
+      body: Stack(
+        children: [
+          Positioned(
+            right: 0,
+            left: 0,
+            top: 0,
+            bottom: 55,
+            child: GoogleMap(
+              myLocationEnabled: true,
+              compassEnabled: false,
+              initialCameraPosition: initialCameraPosition,
+              tiltGesturesEnabled: false,
+              markers: _markers,
+              mapType: MapType.normal,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
 
-              showPinsOnMap();
-            },
+                showPinsOnMap();
+              },
 
+            ),
           ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: NavBar(),
+          )
+        ],
         ),
-      ),
-    );
+      );
   }
 
   void showPinsOnMap() {
@@ -92,3 +106,4 @@ class _MapPageState extends State<MapPage> {
     });
   }
 }
+
