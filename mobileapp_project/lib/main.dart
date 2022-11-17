@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mobileapp_project/app/pages/mappage.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blueGrey,
           backgroundColor: Colors.grey
         ),
-        home: LandingPage(),
+        home: MapPage(),
       ),
     );
   }
