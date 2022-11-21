@@ -50,27 +50,61 @@ class _ProfilePageState extends State<ProfilePage> {
         body: ListView(
           children: [
             buildTopPage(),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                buildContext(context),
-                ElevatedButton(
-                  onPressed: () => _createProfileTest(context),
-                  child: Text(
-                    "Create a profile",
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ),
-              ],
+            buildContext(context),
+            ElevatedButton(
+              onPressed: () => _createProfileTest(context),
+              child: Text(
+                "Create a profile",
+                style: TextStyle(fontSize: 15),
+              ),
             ),
           ],
         ));
   }
 
-  Center buildContext(BuildContext context) {
+  Column buildContext(BuildContext context) {
     _getProfile(context);
-    return Center(child: Text(_username));
+    bool usernameAvailable = (_username == "null");
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        buildBottomBorderUnderWidget(buildUsername(usernameAvailable)),
+      ],
+    );
+  }
+
+  Container buildBottomBorderUnderWidget(Widget childWidget) {
+    return Container(
+      margin: const EdgeInsets.only(left: 50, right: 50),
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.black26,
+            width: 2,
+          ),
+        ),
+      ),
+      child: childWidget,
+    );
+  }
+
+  Widget buildUsername(bool usernameAvailable) {
+    return usernameAvailable
+        ? const Text(
+            "❌ Failed to retrieve username",
+            style: TextStyle(fontSize: 25),
+          )
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.person, size: 40),
+              Text(
+                _username,
+                style: TextStyle(fontSize: 25),
+              )
+            ],
+          );
   }
 
   _getProfile(BuildContext context) async {
