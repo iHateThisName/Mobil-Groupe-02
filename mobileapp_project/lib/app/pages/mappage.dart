@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/app/models/marker.dart';
 
 import '../../custom_widgets/navigation_bar.dart';
 
@@ -23,7 +24,8 @@ class _MapPageState extends State<MapPage> {
   Completer<GoogleMapController> _controller = Completer();
   late BitmapDescriptor sourceIcon;
   late BitmapDescriptor destinationIcon;
-  final Set<Marker> _markers = <Marker>{};
+  //final Set<Marker> _markers = <Marker>{};
+  late List<Marker> _markers;
 
   late LatLng currentLocation;
   late LatLng destinationLocation;
@@ -72,13 +74,13 @@ class _MapPageState extends State<MapPage> {
               compassEnabled: false,
               initialCameraPosition: initialCameraPosition,
               tiltGesturesEnabled: false,
-              markers: _markers,
+              //markers: _markers,
 
               mapType: MapType.normal,
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
 
-                showPinsOnMap();
+                //showPinsOnMap();
               },
 
             ),
@@ -94,7 +96,7 @@ class _MapPageState extends State<MapPage> {
       );
   }
 
-  void showPinsOnMap() {
+  /*void showPinsOnMap() {
     setState(() {
       _markers.add(Marker(
           markerId: MarkerId('sourcePin'),
@@ -107,6 +109,6 @@ class _MapPageState extends State<MapPage> {
           icon: destinationIcon
       ));
     });
-  }
+  }*/
 }
 
