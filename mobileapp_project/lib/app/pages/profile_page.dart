@@ -15,6 +15,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final double _coverImageHeight = 180;
+  final int _profileIconPadding = 25;
   final double _profileImageSize = 44;
 
   String _username = "Value was not updated";
@@ -49,10 +50,19 @@ class _ProfilePageState extends State<ProfilePage> {
         body: ListView(
           children: [
             buildTopPage(),
-            buildContext(context),
-            ElevatedButton(
-              onPressed: () => _createProfileTest(context),
-              child: Text("Create a profile"),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                buildContext(context),
+                ElevatedButton(
+                  onPressed: () => _createProfileTest(context),
+                  child: Text(
+                    "Create a profile",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+              ],
             ),
           ],
         ));
@@ -78,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Container buildTopPage() {
     return Container(
-      margin: EdgeInsets.only(bottom: _profileImageSize),
+      margin: EdgeInsets.only(bottom: _profileImageSize + _profileIconPadding),
       child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
@@ -88,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Positioned buildPageHeader() {
     return Positioned(
-      top: _coverImageHeight - _profileImageSize,
+      top: _coverImageHeight - _profileImageSize + _profileIconPadding,
       child: CircleAvatar(
           radius: _profileImageSize,
           child: Icon(
@@ -99,13 +109,21 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget buildCoverImage() {
+    const borderRadius = BorderRadius.only(
+        bottomLeft: Radius.circular(100), bottomRight: Radius.circular(100));
     return Container(
-      color: Colors.blueGrey,
-      child: Image.asset(
-        "images/hvor-kan-jeg-drite-logo.png",
-        width: double.infinity,
-        height: _coverImageHeight,
-        fit: BoxFit.cover,
+      // color: Colors.blueGrey,
+      padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+      decoration:
+          BoxDecoration(color: Colors.blueGrey, borderRadius: borderRadius),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: Image.asset(
+          "images/hvor-kan-jeg-drite-logo.png",
+          width: double.infinity,
+          height: _coverImageHeight,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
