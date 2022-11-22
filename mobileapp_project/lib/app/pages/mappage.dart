@@ -50,8 +50,8 @@ class _MapPageState extends State<MapPage> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(4),
+                    color: Colors.blueGrey,
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -59,9 +59,9 @@ class _MapPageState extends State<MapPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.account_circle,
+                          Icons.wc_outlined,
                           color: Colors.white,
-                          size: 30,
+                          size: 50,
                         ),
                         SizedBox(
                           width: 8.0,
@@ -72,9 +72,10 @@ class _MapPageState extends State<MapPage> {
                           Theme.of(context).textTheme.headline6?.copyWith(
                             color: Colors.white,
                           ),
-                        )
+                        ),
                       ],
                     ),
+
                   ),
                   width: double.infinity,
                   height: double.infinity,
@@ -159,8 +160,8 @@ class _MapPageState extends State<MapPage> {
           CustomInfoWindow(
             controller: _customInfoWindowController,
             height: 75,
-            width: 150,
-            offset: 50,
+            width: 300,
+            offset: 100,
           ),
           Positioned(
             left: 0,
