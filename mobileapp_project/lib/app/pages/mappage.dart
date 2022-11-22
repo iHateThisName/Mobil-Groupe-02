@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import '../../custom_widgets/navigation_bar.dart';
+import 'package:custom_info_window/custom_info_window.dart';
+import 'package:clippy_flutter/triangle.dart';
 
 const LatLng SOURCE_LOCATION = LatLng(62.472229, 6.149482);
 const LatLng DEST_LOCATION = LatLng(62.47219, 6.2357);
@@ -19,11 +21,19 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
 
+  CustomInfoWindowController _customInfoWindowController =
+  CustomInfoWindowController();
   late GoogleMapController controller;
   Map <MarkerId, Marker> markers = <MarkerId, Marker>{};
   String mapTheme = '';
 
   late BitmapDescriptor markerIcon;
+
+  @override
+  void dispose() {
+    _customInfoWindowController.dispose();
+    super.dispose();
+  }
 
   void initMarker(specify, specifyId) async{
     var markerIdVal = specifyId;
@@ -32,7 +42,49 @@ class _MapPageState extends State<MapPage> {
       markerId: markerId,
       icon: markerIcon,
       position: LatLng(specify['location'].latitude, specify['location'].longitude),
-      infoWindow: InfoWindow(title: 'Toalett', snippet: specify['address']),
+      //infoWindow: InfoWindow(title: 'Toalett', snippet: specify['address']),
+      onTap: () {
+        _customInfoWindowController.addInfoWindow!(
+          Column(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.account_circle,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        Text(
+                          specify['address'],
+                          style:
+                          Theme.of(context).textTheme.headline6?.copyWith(
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+              ),
+            ],
+          ),
+            LatLng(specify['location'].latitude, specify['location'].longitude),
+        );
+      },
     );
 
     setState(() {
@@ -52,6 +104,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   void setMarkerIcons() async {
+
     markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker3.png");
   }
 
@@ -87,14 +140,27 @@ class _MapPageState extends State<MapPage> {
             top: 0,
             bottom: 55,
             child: GoogleMap(
+              onTap: (position) {
+                _customInfoWindowController.hideInfoWindow!();
+              },
+              onCameraMove: (position) {
+                _customInfoWindowController.onCameraMove!();
+              },
               markers: Set<Marker>.of(markers.values),
               mapType: MapType.normal,
               initialCameraPosition: initialCameraPosition,
               onMapCreated: (GoogleMapController controller){
                 controller.setMapStyle(mapTheme);
                 controller = controller;
+                _customInfoWindowController.googleMapController = controller;
               },
             ),
+          ),
+          CustomInfoWindow(
+            controller: _customInfoWindowController,
+            height: 75,
+            width: 150,
+            offset: 50,
           ),
           Positioned(
             left: 0,
