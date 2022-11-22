@@ -1,17 +1,14 @@
-import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp_project/app/models/marker.dart';
-
 import '../../custom_widgets/navigation_bar.dart';
-
 
 const LatLng SOURCE_LOCATION = LatLng(62.472229, 6.149482);
 const LatLng DEST_LOCATION = LatLng(62.47219, 6.2357);
 const double CAMERA_ZOOM = 16;
 const double CAMERA_TILT = 0;
 const double CAMERA_BEARING = 0;
-
 
 class MapPage extends StatefulWidget {
   const MapPage({Key? key}) : super(key: key);
@@ -21,36 +18,47 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  Completer<GoogleMapController> _controller = Completer();
-  late BitmapDescriptor sourceIcon;
-  late BitmapDescriptor destinationIcon;
-  //final Set<Marker> _markers = <Marker>{};
-  late List<Marker> _markers;
 
-  late LatLng currentLocation;
-  late LatLng destinationLocation;
+  late GoogleMapController controller;
+  Map <MarkerId, Marker> markers = <MarkerId, Marker>{};
+
+  late BitmapDescriptor markerIcon;
+
+  void initMarker(specify, specifyId) async{
+    var markerIdVal = specifyId;
+    final MarkerId markerId = MarkerId(markerIdVal);
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: LatLng(specify['location'].latitude, specify['location'].longitude),
+    );
+
+    setState(() {
+      markers[markerId] = marker;
+    });
+  }
+
+  getMarkerData() async {
+    FirebaseFirestore.instance.collection('markers').get().then((myMapData){
+      if(myMapData.docs.isNotEmpty){
+        for(int i=0; i<myMapData.docs.length; i++){
+          initMarker(
+              myMapData.docs[i].data(), myMapData.docs[i].id);
+        }
+      }
+    });
+  }
+
+  void setMarkerIcons() async {
+    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker2.png");
+  }
 
   @override
-  void initState() {
+  void initState(){
+    getMarkerData();
     super.initState();
 
-    // set up initial locations
-    this.setInitialLocation();
-
-    this.setSourceAndDestinationMarkerIcons();
+    this.setMarkerIcons();
   }
-
-  void setSourceAndDestinationMarkerIcons() async {
-    sourceIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker2.png");
-    destinationIcon = await BitmapDescriptor.defaultMarker;
-  }
-
-
-
-  void setInitialLocation() {
-    currentLocation = LatLng(SOURCE_LOCATION.latitude, SOURCE_LOCATION.longitude);
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +69,7 @@ class _MapPageState extends State<MapPage> {
         bearing: CAMERA_BEARING,
         target: SOURCE_LOCATION
     );
+
     return Scaffold(
       body: Stack(
         children: [
@@ -70,19 +79,12 @@ class _MapPageState extends State<MapPage> {
             top: 0,
             bottom: 55,
             child: GoogleMap(
-              myLocationEnabled: true,
-              compassEnabled: false,
-              initialCameraPosition: initialCameraPosition,
-              tiltGesturesEnabled: false,
-              //markers: _markers,
-
+              markers: Set<Marker>.of(markers.values),
               mapType: MapType.normal,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-
-                //showPinsOnMap();
+              initialCameraPosition: initialCameraPosition,
+              onMapCreated: (GoogleMapController controller){
+                controller = controller;
               },
-
             ),
           ),
           Positioned(
@@ -92,23 +94,8 @@ class _MapPageState extends State<MapPage> {
             child: NavBar(),
           )
         ],
-        ),
-      );
+      ),
+    );
   }
-
-  /*void showPinsOnMap() {
-    setState(() {
-      _markers.add(Marker(
-          markerId: MarkerId('sourcePin'),
-          position: currentLocation,
-          icon: sourceIcon
-      ));
-      _markers.add(Marker(
-          markerId: MarkerId('destinationPin'),
-          position: destinationLocation,
-          icon: destinationIcon
-      ));
-    });
-  }*/
 }
 

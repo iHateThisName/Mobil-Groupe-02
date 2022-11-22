@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/services/api_path.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 abstract class Database {
   Future<void> createProfile(Profile profile);
@@ -27,6 +30,7 @@ class FireStoreDatabase implements Database {
     return null;
   }
 
+
   @override
   Future<void> createProfile(Profile profile) =>
       _setData(path: APIPath.profile(uid, "profile"), data: profile.toMap());
@@ -37,4 +41,5 @@ class FireStoreDatabase implements Database {
     print("$path: $data");
     await reference.set(data);
   }
+
 }
