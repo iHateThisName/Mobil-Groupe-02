@@ -21,6 +21,7 @@ class _MapPageState extends State<MapPage> {
 
   late GoogleMapController controller;
   Map <MarkerId, Marker> markers = <MarkerId, Marker>{};
+  String mapTheme = '';
 
   late BitmapDescriptor markerIcon;
 
@@ -58,6 +59,11 @@ class _MapPageState extends State<MapPage> {
     super.initState();
 
     this.setMarkerIcons();
+
+    DefaultAssetBundle.of(context).loadString('assets/maptheme/dark_theme.json').then((value) {
+      mapTheme = value;
+    });
+
   }
 
   @override
@@ -83,6 +89,7 @@ class _MapPageState extends State<MapPage> {
               mapType: MapType.normal,
               initialCameraPosition: initialCameraPosition,
               onMapCreated: (GoogleMapController controller){
+                controller.setMapStyle(mapTheme);
                 controller = controller;
               },
             ),
