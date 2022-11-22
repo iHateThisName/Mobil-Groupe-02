@@ -30,6 +30,7 @@ class _MapPageState extends State<MapPage> {
     final MarkerId markerId = MarkerId(markerIdVal);
     final Marker marker = Marker(
       markerId: markerId,
+      icon: markerIcon,
       position: LatLng(specify['location'].latitude, specify['location'].longitude),
       infoWindow: InfoWindow(title: 'Toalett', snippet: specify['address']),
     );
@@ -51,7 +52,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   void setMarkerIcons() async {
-    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker2.png");
+    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker3.png");
   }
 
   @override
