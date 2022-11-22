@@ -18,12 +18,21 @@ class _ProfilePageState extends State<ProfilePage> {
   final int _profileIconPadding = 25;
   final double _profileImageSize = 44;
 
-  String _username = "Value was not updated";
+  bool _profileExist = false;
+  String _username = "Username was not updated";
+  String _email = "Email was not updated";
 
   Future<void> _signOut(BuildContext context) async {
     try {
       final auth = Provider.of<AuthBase>(context, listen: false);
+      final database = Provider.of<Database>(context, listen: false);
+
       await auth.signOut();
+      // //Deleting anonymous Profile when user logs out
+      if (auth.isAnonymous()) {
+        //Todo this is not deleting anything
+        database.deleteProfile();
+      }
     } catch (e) {
       print(e.toString());
     }
@@ -32,6 +41,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_profileExist) {
+      _createProfile(context);
+    }
     return Scaffold(
         appBar: AppBar(
           actions: <Widget>[
@@ -51,13 +63,6 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             buildTopPage(),
             buildContext(context),
-            ElevatedButton(
-              onPressed: () => _createProfileTest(context),
-              child: Text(
-                "Create a profile",
-                style: TextStyle(fontSize: 15),
-              ),
-            ),
           ],
         ));
   }
@@ -90,21 +95,30 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget buildUsername(bool usernameAvailable) {
-    return usernameAvailable
-        ? const Text(
-            "❌ Failed to retrieve username",
-            style: TextStyle(fontSize: 25),
-          )
-        : Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.person, size: 40),
-              Text(
-                _username,
-                style: TextStyle(fontSize: 25),
-              )
-            ],
-          );
+    return FittedBox(
+      fit: BoxFit.fill,
+      child: usernameAvailable
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.downloading, size: 40),
+                Text(
+                  "Retrieving username",
+                  style: TextStyle(fontSize: 25),
+                ),
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.person, size: 40),
+                Text(
+                  _username,
+                  style: const TextStyle(fontSize: 25),
+                )
+              ],
+            ),
+    );
   }
 
   _getProfile(BuildContext context) async {
@@ -162,11 +176,27 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> _createProfileTest(BuildContext context) async {
+  Future<void> _createProfile(BuildContext context) async {
     try {
+      final auth = Provider.of<AuthBase>(context, listen: false);
       final database = Provider.of<Database>(context, listen: false);
-      await database
-          .createProfile(Profile(username: "profileNameTest", score: 1));
+      Profile? profile = await database.getProfile();
+
+      //The user should never be null, because of the landing_page
+      User user = auth.getUser()!;
+      String authUsername = "Missing Username";
+
+      if (user.email != null) {
+        authUsername = user.email!;
+      } else {
+        authUsername = "Anonymous User";
+      }
+
+      if (profile == null) {
+        await database.createProfile(
+            Profile(username: authUsername, score: 0, email: user.email));
+      }
+      _profileExist = true;
     } on FirebaseException catch (e) {
       print(e.stackTrace);
     }
