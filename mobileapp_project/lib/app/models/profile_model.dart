@@ -2,7 +2,7 @@
 class Profile {
   final String username;
   final int score; // Give the user a point system.
-  final String email;
+  final String? email;
 
   Profile({
     required this.username,
