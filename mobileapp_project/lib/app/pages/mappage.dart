@@ -31,6 +31,7 @@ class _MapPageState extends State<MapPage> {
     final Marker marker = Marker(
       markerId: markerId,
       position: LatLng(specify['location'].latitude, specify['location'].longitude),
+      infoWindow: InfoWindow(title: 'Toalett', snippet: specify['address']),
     );
 
     setState(() {
