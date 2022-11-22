@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthBase {
@@ -8,17 +7,21 @@ abstract class AuthBase {
   Future<void> signOut();
   Future<User?> signInWithEmailAndPassword(String email, String password);
   Future<User?> createUserWithEmailAndPassword(String email, String password);
+  User? getUser();
+  bool isAnonymous();
 
 }
 
 class Auth implements AuthBase {
   final _firebaseAuth = FirebaseAuth.instance;
+  bool anonymous = false;
 
   @override
   Stream<User?> authStateChanges() => _firebaseAuth.authStateChanges();
 
   @override
   Future<User?> signInAnonymously() async {
+    anonymous = true;
     final userCredential = await _firebaseAuth.signInAnonymously();
     return userCredential.user;
   }
@@ -32,6 +35,7 @@ class Auth implements AuthBase {
   @override
   Future<User?> signInWithEmailAndPassword(
       String email, String password) async {
+    anonymous = false;
     final userCredential = await _firebaseAuth.signInWithCredential(
       EmailAuthProvider.credential(email: email, password: password),
     );
@@ -48,7 +52,16 @@ class Auth implements AuthBase {
     return userCredential.user;
   }
 
-  //todo Google
+  @override
+  User? getUser() {
+    return _firebaseAuth.currentUser;
+  }
 
-  //todo Facebook
+  @override
+  bool isAnonymous() {
+    return anonymous;
+  }
+
+
+
 }
