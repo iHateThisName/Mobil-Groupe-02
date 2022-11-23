@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
         actions: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
-              foregroundColor: Colors.white,
+              backgroundColor: Colors.white,
               textStyle: const TextStyle(
                 fontSize: 18,
               ),

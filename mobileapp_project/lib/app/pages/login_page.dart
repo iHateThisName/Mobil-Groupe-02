@@ -11,7 +11,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Toilet App'),
+        title: const Text('Jeg må på do!'),
         elevation: 2.0,
       ),
       body: _buildContent(context),
