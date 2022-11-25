@@ -1,4 +1,4 @@
-
+/// Class that represents a profile of the user.
 
 class Profile {
 

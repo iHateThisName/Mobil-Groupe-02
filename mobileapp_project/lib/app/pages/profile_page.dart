@@ -6,6 +6,9 @@ import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 
+/// A class that represents profile page of the application
+/// Creates a state subclass.
+
 class ProfilePage extends StatefulWidget {
   ProfilePage({super.key});
 
@@ -13,11 +16,14 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
+/// State subclass of ProfilePage.
+
 class _ProfilePageState extends State<ProfilePage> {
   final double _coverImageHeight = 180;
   final double _profileImageSize = 44;
 
   String _username = "Value was not updated";
+
 
   Future<void> _signOut(BuildContext context) async {
     try {
