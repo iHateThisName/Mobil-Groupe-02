@@ -6,10 +6,12 @@ import 'package:provider/provider.dart';
 import 'home_page.dart';
 import 'login_page.dart';
 
+/// A class that represents our Landing page.
+
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
 
-
+  // Root widget of the landing page.
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);

@@ -5,6 +5,8 @@ import 'package:mobileapp_project/app/pages/profile_page.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 
+/// A class that represents our Home page.
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.user});
 
@@ -31,6 +33,10 @@ class HomePage extends StatelessWidget {
       body: MapPage(),
     );
   }
+
+
+  /// Method that shows the profile page of the current user
+  /// Gets user from the database.
 
   void _showProfilePage(BuildContext context) {
     Navigator.of(context).push(

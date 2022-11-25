@@ -4,6 +4,8 @@ import 'package:mobileapp_project/custom_widgets/custom_elevatedbutton.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
 
+/// A class that represents our log in page.
+
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
