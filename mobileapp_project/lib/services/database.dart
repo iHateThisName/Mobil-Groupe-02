@@ -45,6 +45,8 @@ class FireStoreDatabase implements Database {
     return FirebaseFirestore.instance
         .collection("users")
         .doc(uid)
+        .collection("data")
+        .doc("profile")
         .delete()
         .then((doc) => print("Document Deleted"),
             onError: (e) => print("Error updating document $e"));

@@ -19,20 +19,19 @@ class _ProfilePageState extends State<ProfilePage> {
   final double _profileImageSize = 44;
 
   bool _profileExist = false;
-  String _username = "Username was not updated";
+  bool _singOutPressed = false;
+  String _username = "";
   String _email = "Email was not updated";
 
   Future<void> _signOut(BuildContext context) async {
     try {
       final auth = Provider.of<AuthBase>(context, listen: false);
       final database = Provider.of<Database>(context, listen: false);
-
-      await auth.signOut();
       // //Deleting anonymous Profile when user logs out
       if (auth.isAnonymous()) {
-        //Todo this is not deleting anything
-        database.deleteProfile();
+        await database.deleteProfile();
       }
+      await auth.signOut();
     } catch (e) {
       print(e.toString());
     }
@@ -41,7 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_profileExist) {
+    if (!_profileExist && !_singOutPressed) {
       _createProfile(context);
     }
     return Scaffold(
@@ -54,7 +53,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   fontSize: 18,
                 ),
               ),
-              onPressed: () => _signOut(context),
+              onPressed: () {
+                _singOutPressed = true;
+                _signOut(context);
+              },
               child: const Text("Sign Out"),
             )
           ],
