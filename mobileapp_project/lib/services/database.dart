@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
@@ -6,7 +8,7 @@ import 'package:mobileapp_project/services/api_path.dart';
 abstract class Database {
   Future<void> createProfile(Profile profile);
   Future<Profile?> getProfile();
-  void deleteProfile();
+  Future<void> deleteProfile();
 }
 
 class FireStoreDatabase implements Database {
@@ -37,15 +39,15 @@ class FireStoreDatabase implements Database {
       _setData(path: APIPath.profile(uid, "profile"), data: profile.toMap());
 
   @override
-  void deleteProfile() async {
+  Future<void> deleteProfile() async {
     debugPrint("Deleting user with uid: $uid");
-    // await FirebaseFirestore.instance.collection("users").doc(uid).delete();
 
-    FirebaseFirestore.instance
+    return FirebaseFirestore.instance
         .collection("users")
         .doc(uid)
         .delete()
-        .then((doc) => print("Deleting user with uid: $uid"));
+        .then((doc) => print("Document Deleted"),
+            onError: (e) => print("Error updating document $e"));
   }
 
   Future<void> _setData(
