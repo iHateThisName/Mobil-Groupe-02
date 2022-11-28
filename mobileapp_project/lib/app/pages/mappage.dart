@@ -25,7 +25,9 @@ final _firestore = FirebaseFirestore.instance;
 /// Creates a state subclass.
 
 class MapPage extends StatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
+  const MapPage({Key? key, required this.user}) : super(key: key);
+
+  final User user;
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -203,17 +205,7 @@ class _MapPageState extends State<MapPage> {
         target: sourceLocation);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Google Maps'),
-        leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.person),
-          ),
-        ],
-        centerTitle: true,
-      ),
+      appBar: buildAppBar(),
       body: Stack(
         children: [
           Positioned(
@@ -257,6 +249,34 @@ class _MapPageState extends State<MapPage> {
             child: NavBar(),
           )*/
         ],
+      ),
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      title: const Text('Google Maps'),
+      leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
+      actions: [
+        IconButton(
+          onPressed: () => _showProfilePage(context),
+          icon: const Icon(Icons.person),
+        ),
+      ],
+      centerTitle: true,
+    );
+  }
+
+  /// Method that shows the profile page of the current user
+  /// Gets user from the database.
+
+  void _showProfilePage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (context) => Provider<Database>(
+            create: (_) => FireStoreDatabase(uid: widget.user.uid),
+            child: ProfilePage()),
       ),
     );
   }

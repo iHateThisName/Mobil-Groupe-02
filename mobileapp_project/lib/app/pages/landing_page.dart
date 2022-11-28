@@ -30,7 +30,7 @@ class LandingPage extends StatelessWidget {
           }
           print("Showing the home page");
           // return HomePage(user: user);
-          return MapPage();
+          return MapPage(user: user);
         }
         return const Scaffold(
           body: Center(

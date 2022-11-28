@@ -78,7 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Colors.white,
+                foregroundColor: Colors.white,
                 textStyle: const TextStyle(
                   fontSize: 18,
                 ),
