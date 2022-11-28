@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp_project/services/database.dart';
-import '../../custom_widgets/navigation_bar.dart';
 import 'package:custom_info_window/custom_info_window.dart';
-import 'package:clippy_flutter/triangle.dart';
 
 import 'package:geoflutterfire2/geoflutterfire2.dart';
+import 'package:mobileapp_project/app/pages/profile_page.dart';
+import 'package:provider/provider.dart';
 
-
+import '../../services/database.dart';
 
 // Constant fields to make it easier to change the default map properties like location and zoom.
 const LatLng sourceLocation = LatLng(62.472229, 6.149482);
@@ -25,7 +25,9 @@ final _firestore = FirebaseFirestore.instance;
 /// Creates a state subclass.
 
 class MapPage extends StatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
+  const MapPage({Key? key, required this.user}) : super(key: key);
+
+  final User user;
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -34,13 +36,12 @@ class MapPage extends StatefulWidget {
 /// A state subclass of the Map page.
 
 class _MapPageState extends State<MapPage> {
-
   /// Fields including two controllers for the map and the marker info window, collection of key/value pair in markers (MarkerId, Marker), theme and icon.
 
   final CustomInfoWindowController _customInfoWindowController =
-  CustomInfoWindowController();
+      CustomInfoWindowController();
   late GoogleMapController controller;
-  Map <MarkerId, Marker> markers = <MarkerId, Marker>{};
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String mapTheme = '';
   late BitmapDescriptor markerIcon;
 
@@ -56,8 +57,7 @@ class _MapPageState extends State<MapPage> {
   /// Initializes the map markers using key/value pairs
   /// Gets the markers from our cloud firestore
 
-  void initMarker(specify, specifyId) async{
-
+  void initMarker(specify, specifyId) async {
     var markerIdVal = specifyId;
     final MarkerId markerId = MarkerId(markerIdVal);
 
@@ -66,7 +66,8 @@ class _MapPageState extends State<MapPage> {
       markerId: markerId,
       icon: markerIcon,
       //We specify where to find the marker position by locating the geopoints in the database
-      position: LatLng(specify['location'].latitude, specify['location'].longitude),
+      position:
+          LatLng(specify['location'].latitude, specify['location'].longitude),
       //infoWindow: InfoWindow(title: 'Toalett', snippet: specify['address']),
 
       // By using the custom info window package, an info window will show when clicking a marker.
@@ -99,20 +100,19 @@ class _MapPageState extends State<MapPage> {
                         Text(
                           specify['address'],
                           style:
-                          Theme.of(context).textTheme.headline6?.copyWith(
-                            color: Colors.white,
-                          ),
+                              Theme.of(context).textTheme.headline6?.copyWith(
+                                    color: Colors.white,
+                                  ),
                         ),
                       ],
                     ),
-
                   ),
                 ),
               ),
             ],
           ),
-            // Places the info window at the same position as the chosen marker
-            LatLng(specify['location'].latitude, specify['location'].longitude),
+          // Places the info window at the same position as the chosen marker
+          LatLng(specify['location'].latitude, specify['location'].longitude),
         );
       },
     );
@@ -123,11 +123,10 @@ class _MapPageState extends State<MapPage> {
 
   /// Gets the data of the markers position and address from the marker collection in the database.
   getMarkerData() async {
-    FirebaseFirestore.instance.collection('markers').get().then((myMapData){
-      if(myMapData.docs.isNotEmpty){
-        for(int i=0; i<myMapData.docs.length; i++){
-          initMarker(
-              myMapData.docs[i].data(), myMapData.docs[i].id);
+    FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
+      if (myMapData.docs.isNotEmpty) {
+        for (int i = 0; i < myMapData.docs.length; i++) {
+          initMarker(myMapData.docs[i].data(), myMapData.docs[i].id);
         }
       }
     });
@@ -142,7 +141,6 @@ class _MapPageState extends State<MapPage> {
       'location': GeoPoint(positionLatLng.latitude, positionLatLng.longitude),
       'address': inputAddress
     });
-
   }
 
   Future addMarker() async {
@@ -163,8 +161,7 @@ class _MapPageState extends State<MapPage> {
               },
             ),
             SimpleDialogOption(
-              child: const Text('Add',
-              style: TextStyle(color: Colors.blue)),
+              child: const Text('Add', style: TextStyle(color: Colors.blue)),
               onPressed: () {
                 _addGeoPoint();
                 Navigator.of(context).pop();
@@ -173,52 +170,42 @@ class _MapPageState extends State<MapPage> {
           ],
         );
       },
-
     );
   }
 
   /// Sets a custom icon for the markers.
   void setMarkerIcons() async {
-
-    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker3.png");
+    markerIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), "images/toiletmarker3.png");
   }
 
   /// initState method which is called when an object for the stateful widget is created and inserted.
   /// Initializes the marker data, map theme and marker icons.
   @override
-  void initState(){
+  void initState() {
     getMarkerData();
     super.initState();
 
     setMarkerIcons();
 
-    DefaultAssetBundle.of(context).loadString('assets/maptheme/dark_theme.json').then((value) {
+    DefaultAssetBundle.of(context)
+        .loadString('assets/maptheme/dark_theme.json')
+        .then((value) {
       mapTheme = value;
     });
-
   }
-
 
   /// Root widget of the map page.
   @override
   Widget build(BuildContext context) {
-
     CameraPosition initialCameraPosition = const CameraPosition(
         zoom: camZoom,
         tilt: camTilt,
         bearing: camBearing,
-        target: sourceLocation
-    );
+        target: sourceLocation);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Google Maps'),
-        leading: IconButton(
-            onPressed: addMarker,
-            icon: const Icon(Icons.add)
-        ),
-        centerTitle: true,
-      ),
+      appBar: buildAppBar(),
       body: Stack(
         children: [
           Positioned(
@@ -243,7 +230,7 @@ class _MapPageState extends State<MapPage> {
               // The initial camera position when we enter the app
               initialCameraPosition: initialCameraPosition,
 
-              onMapCreated: (GoogleMapController controller){
+              onMapCreated: (GoogleMapController controller) {
                 controller.setMapStyle(mapTheme);
                 _customInfoWindowController.googleMapController = controller;
               },
@@ -265,5 +252,32 @@ class _MapPageState extends State<MapPage> {
       ),
     );
   }
-}
 
+  AppBar buildAppBar() {
+    return AppBar(
+      title: const Text('Google Maps'),
+      leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
+      actions: [
+        IconButton(
+          onPressed: () => _showProfilePage(context),
+          icon: const Icon(Icons.person),
+        ),
+      ],
+      centerTitle: true,
+    );
+  }
+
+  /// Method that shows the profile page of the current user
+  /// Gets user from the database.
+
+  void _showProfilePage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (context) => Provider<Database>(
+            create: (_) => FireStoreDatabase(uid: widget.user.uid),
+            child: ProfilePage()),
+      ),
+    );
+  }
+}
