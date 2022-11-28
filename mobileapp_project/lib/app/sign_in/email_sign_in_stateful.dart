@@ -41,12 +41,9 @@ class _EmailSignInState extends State<EmailSignInStateful> {
         await auth.createUserWithEmailAndPassword(_email, _password);
       }
       Navigator.of(context).pop();
-
     } catch (e) {
       print(e.toString());
-
     } finally {
-
       setState(() {
         _isLoading = false;
       });
@@ -89,14 +86,14 @@ class _EmailSignInState extends State<EmailSignInStateful> {
       const SizedBox(height: 8.0),
       CustomElevatedButton(
         onPressed: submitEnable ? _submit : null,
-        color: Colors.black38,
+        color: Colors.blueGrey,
         borderRadius: 4,
         child: Text(primaryText),
       ),
       const SizedBox(height: 8.0),
       TextButton(
         style: TextButton.styleFrom(
-          backgroundColor: Colors.black,
+          foregroundColor: Colors.black,
         ),
         onPressed: !_isLoading ? _toggleFormType : null,
         child: Text(secondaryText),

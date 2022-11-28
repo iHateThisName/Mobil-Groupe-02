@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/app/pages/mappage.dart';
+import 'package:mobileapp_project/app/pages/welcome.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +29,8 @@ class LandingPage extends StatelessWidget {
             return LoginPage();
           }
           print("Showing the home page");
-          return HomePage(user: user);
+          // return HomePage(user: user);
+          return MapPage(user: user);
         }
         return const Scaffold(
           body: Center(

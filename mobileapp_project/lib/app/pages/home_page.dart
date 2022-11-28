@@ -30,10 +30,9 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
-      body: MapPage(),
+      body: Container(),
     );
   }
-
 
   /// Method that shows the profile page of the current user
   /// Gets user from the database.
