@@ -26,7 +26,10 @@ void main() {
     var specificButton2 = find.text('Fortsett uten profil');
     expect(specificButton2, findsOneWidget);
 
-
+    var textField = find.byType(TextField);
+    expect(textField, findsOneWidget);
+    await tester.enterText(textField, 'test');
+    expect(find.text('test'), findsOneWidget);
 
   });
 
