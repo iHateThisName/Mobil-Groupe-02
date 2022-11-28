@@ -4,34 +4,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'login_page.dart';
 
-
 class OnWelcome extends StatefulWidget {
-
   @override
   _OnWelcomeState createState() => _OnWelcomeState();
 }
 
 class _OnWelcomeState extends State<OnWelcome> {
-
   List<WelcomePage> screens = <WelcomePage>[
     WelcomePage(
         img: 'images/hvor-kan-jeg-drite-logo.png',
         text: "Hjelp, jeg må på do!",
         button: Colors.blue,
-        bg: Colors.white,
-        desc: ""
-    ),
+        bg: Colors.blueGrey,
+        desc: ""),
     WelcomePage(
-      img: 'images/toiletmarker3.jpg',
-      text: "Se etter toalett markørene",
+      img: 'images/toiletmarker3.png',
+      text: "Se etter toalettmarkørene",
       button: Colors.blue,
-      bg: Colors.white,
+      bg: Colors.blueGrey,
       desc: "",
     ),
   ];
   int currentIndex = 0;
   late PageController _pageController;
-
 
   @override
   void initState() {
@@ -65,10 +60,12 @@ class _OnWelcomeState extends State<OnWelcome> {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => LoginPage()));
               },
-              child: Text("Skip",
+              child: Text(
+                "Skip",
                 style: TextStyle(
                   color: currentIndex % 2 == 0 ? Colors.black : Colors.white,
-                ),))
+                ),
+              ))
         ],
       ),
       body: Padding(
@@ -113,7 +110,8 @@ class _OnWelcomeState extends State<OnWelcome> {
                           );
                         }),
                   ),
-                  Text(screens[index].text!,
+                  Text(
+                    screens[index].text!,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 27.0,
@@ -134,8 +132,10 @@ class _OnWelcomeState extends State<OnWelcome> {
                       await _storeWelcomeInfo();
                       int indx = screens.length;
                       if (index == indx - 1) {
-                        Navigator.pushReplacement(context, MaterialPageRoute(
-                            builder: (context) => LoginPage()));
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
                       }
                       _pageController.nextPage(
                           duration: Duration(microseconds: 300),
@@ -146,20 +146,21 @@ class _OnWelcomeState extends State<OnWelcome> {
                           horizontal: 30.0, vertical: 10.0),
                       decoration: BoxDecoration(
                           color: index % 2 == 0 ? Colors.blue : Colors.white,
-                          borderRadius: BorderRadius.circular(15.0)
-                      ),
+                          borderRadius: BorderRadius.circular(15.0)),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text("Next",
                               style: TextStyle(
                                   fontSize: 16.0,
-                                  color: index % 2 == 0 ? Colors.white : Colors
-                                      .blue)),
+                                  color: index % 2 == 0
+                                      ? Colors.white
+                                      : Colors.blue)),
                           SizedBox(width: 15.0),
-                          Icon(Icons.arrow_forward_sharp, color: index % 2 == 0
-                              ? Colors.white
-                              : Colors.blue,)
+                          Icon(
+                            Icons.arrow_forward_sharp,
+                            color: index % 2 == 0 ? Colors.white : Colors.blue,
+                          )
                         ],
                       ),
                     ),
