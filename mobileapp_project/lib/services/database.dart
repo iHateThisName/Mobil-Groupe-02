@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/services/api_path.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,6 +11,7 @@ import 'package:firebase_database/firebase_database.dart';
 abstract class Database {
   Future<void> createProfile(Profile profile);
   Future<Profile?> getProfile();
+  Future<void> deleteProfile();
 }
 
 class FireStoreDatabase implements Database {
@@ -25,7 +29,10 @@ class FireStoreDatabase implements Database {
     var docSnapshot = await collection.doc("profile").get();
     if (docSnapshot.exists) {
       Map<String, dynamic>? data = docSnapshot.data();
-      return Profile(username: data?["username"], score: data?["score"]);
+      return Profile(
+          username: data?["username"],
+          score: data?["score"],
+          email: data?["email"]);
     }
     return null;
   }
@@ -34,6 +41,20 @@ class FireStoreDatabase implements Database {
   @override
   Future<void> createProfile(Profile profile) =>
       _setData(path: APIPath.profile(uid, "profile"), data: profile.toMap());
+
+  @override
+  Future<void> deleteProfile() async {
+    debugPrint("Deleting user with uid: $uid");
+
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(uid)
+        .collection("data")
+        .doc("profile")
+        .delete()
+        .then((doc) => print("Document Deleted"),
+            onError: (e) => print("Error updating document $e"));
+  }
 
   Future<void> _setData(
       {required String path, required Map<String, dynamic> data}) async {
