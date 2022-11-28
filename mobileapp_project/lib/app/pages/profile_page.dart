@@ -15,18 +15,38 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  /// The height of the background/cover image that is placed on the top of the profile page.
   final double _coverImageHeight = 180;
+
+  /// The padding for the distance between the profile image and the newt widget.
   final int _profileIconPadding = 25;
+
+  /// The size of the profile image.
   final double _profileImageSize = 44;
 
+  /// A Boolean that informs if the project have return a profile from the database.
   bool _profileExist = false;
+
+  /// A Boolean that represent the sign out button.
+  ///
+  /// Used to inform that the button is pressed.
   bool _singOutPressed = false;
+
+  /// The username for the user that is log in.
+  ///
+  /// The username is the same as the email
   String _username = "null";
+
+  /// The amount of points/score the user currently possesses, where '0' is default.
+  ///
+  /// Value is null if failed to retrieve the score from the user profile.
+  /// Value is also null when retrieving the user profile.
   int? _score;
 
-  //username = email right now
-  String _email = "Email was not updated";
-
+  /// Sign outs the user.
+  ///
+  /// Delete the users profile if the user is anonymous.
+  /// Signs out the user from the database.
   Future<void> _signOut(BuildContext context) async {
     try {
       final auth = Provider.of<AuthBase>(context, listen: false);
@@ -69,13 +89,13 @@ class _ProfilePageState extends State<ProfilePage> {
         body: ListView(
           children: [
             buildTopPage(),
-            buildContext(context),
+            _buildMainData(context),
           ],
         ));
   }
 
   /// Builds the main context for the profile page.
-  Column buildContext(BuildContext context) {
+  Column _buildMainData(BuildContext context) {
     _getProfile(context);
     bool usernameAvailable = (_username == "null");
     return Column(
@@ -165,6 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  /// Builds the top part of the Profile page.
   Container buildTopPage() {
     return Container(
       margin: EdgeInsets.only(bottom: _profileImageSize + _profileIconPadding),
