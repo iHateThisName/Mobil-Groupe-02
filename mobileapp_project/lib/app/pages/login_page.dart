@@ -13,7 +13,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Toilet App'),
+        title: const Text('Jeg må på do!'),
         elevation: 2.0,
       ),
       body: _buildContent(context),
@@ -27,6 +27,8 @@ class LoginPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          const Image(image: AssetImage('images/hvor-kan-jeg-drite-logo.png')),
+          const SizedBox(height: 10),
           const Text(
             'Logg inn',
             textAlign: TextAlign.center,
@@ -36,42 +38,7 @@ class LoginPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16.0),
-          CustomElevatedButton(
-            color: Colors.blueGrey,
-            borderRadius: 5,
-            onPressed: null,
-            child: SizedBox(
-              height: 50,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Image.asset('images/google-logo.png'),
-                  const Text('Logg inn gjennom Google'),
-                  Opacity(
-                      opacity: 0, child: Image.asset('images/google-logo.png')),
-                ],
-              ),
-            ),
-          ),
           const SizedBox(height: 10),
-          CustomElevatedButton(
-            color: Colors.indigo,
-            borderRadius: 5,
-            onPressed: null,
-            child: SizedBox(
-              height: 50,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Image.asset('images/facebook-logo.png'),
-                  const Text('Logg inn gjennom Facebook'),
-                  Opacity(
-                      opacity: 0,
-                      child: Image.asset('images/facebook-logo.png')),
-                ],
-              ),
-            ),
-          ),
           const SizedBox(height: 1.0),
           CustomElevatedButton(
             color: Colors.deepOrangeAccent,
