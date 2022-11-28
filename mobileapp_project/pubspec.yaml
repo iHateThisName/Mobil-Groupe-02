@@ -49,6 +49,8 @@ dependencies:
   geoflutterfire2: ^2.3.14
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 
