@@ -50,6 +50,8 @@ dependencies:
   geoflutterfire2: ^2.3.14
 
 dev_dependencies:
+  flutter_driver:
+    sdk: flutter
   integration_test:
     sdk: flutter
   flutter_test:
