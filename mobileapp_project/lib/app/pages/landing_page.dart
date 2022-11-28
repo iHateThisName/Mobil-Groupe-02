@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/app/pages/mappage.dart';
 import 'package:mobileapp_project/app/pages/welcome.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
@@ -25,10 +26,11 @@ class LandingPage extends StatelessWidget {
           //If we have a season user information that we don't need to show the logg in page
           if (user == null) {
             print("There is no user information");
-            return OnWelcome();
+            return LoginPage();
           }
           print("Showing the home page");
-          return HomePage(user: user);
+          // return HomePage(user: user);
+          return MapPage();
         }
         return const Scaffold(
           body: Center(
