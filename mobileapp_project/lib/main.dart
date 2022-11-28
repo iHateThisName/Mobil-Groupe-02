@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blueGrey,
           backgroundColor: Colors.grey
         ),
-        home: LoginPage(),
+        home: MapPage(),
       ),
     );
   }

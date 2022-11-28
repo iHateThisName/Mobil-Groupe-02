@@ -42,6 +42,9 @@ dependencies:
   firebase_database: ^10.0.6
   custom_info_window: ^1.0.1
   clippy_flutter: ^2.0.0-nullsafety.1
+  cloud_functions: ^4.0.5
+  geocoding: ^2.0.5
+  geoflutterfire2: ^2.3.14
 
 dev_dependencies:
   flutter_test:

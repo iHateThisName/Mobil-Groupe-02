@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/services/database.dart';
 import '../../custom_widgets/navigation_bar.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:clippy_flutter/triangle.dart';
+
+import 'package:geoflutterfire2/geoflutterfire2.dart';
+
 
 
 // Constant fields to make it easier to change the default map properties like location and zoom.
@@ -12,6 +17,9 @@ const LatLng sourceLocation = LatLng(62.472229, 6.149482);
 const double camZoom = 16;
 const double camTilt = 0;
 const double camBearing = 0;
+
+final geo = GeoFlutterFire();
+final _firestore = FirebaseFirestore.instance;
 
 /// A class that represents our Map page.
 /// Creates a state subclass.
@@ -35,6 +43,8 @@ class _MapPageState extends State<MapPage> {
   Map <MarkerId, Marker> markers = <MarkerId, Marker>{};
   String mapTheme = '';
   late BitmapDescriptor markerIcon;
+
+  String inputAddress = '';
 
   /// Dispose method that releases memory to the controller when the state object is removed.
   @override
@@ -123,6 +133,50 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  Future<DocumentReference> _addGeoPoint() async {
+    List<Location> pos = await locationFromAddress(inputAddress);
+    /*GeoFirePoint point = geo.point(latitude: 62.47094, longitude: 6.175);*/
+    LatLng positionLatLng = LatLng(pos.first.latitude, pos.first.longitude);
+
+    return _firestore.collection('markers').add({
+      'location': GeoPoint(positionLatLng.latitude, positionLatLng.longitude),
+      'address': inputAddress
+    });
+
+  }
+
+  Future addMarker() async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text(
+            'Add Marker locaton',
+            style: TextStyle(fontSize: 17),
+          ),
+          children: <Widget>[
+            TextField(
+              onChanged: (String enteredLocation) {
+                setState(() {
+                  inputAddress = enteredLocation;
+                });
+              },
+            ),
+            SimpleDialogOption(
+              child: const Text('Add',
+              style: TextStyle(color: Colors.blue)),
+              onPressed: () {
+                _addGeoPoint();
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
+
+    );
+  }
+
   /// Sets a custom icon for the markers.
   void setMarkerIcons() async {
 
@@ -157,13 +211,21 @@ class _MapPageState extends State<MapPage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Google Maps'),
+        leading: IconButton(
+            onPressed: addMarker,
+            icon: const Icon(Icons.add)
+        ),
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
           Positioned(
             right: 0,
             left: 0,
             top: 0,
-            bottom: 55,
+            bottom: 0,
             // Adds google maps as a child
             child: GoogleMap(
               // Hides the info window when you tap somewhere
@@ -193,12 +255,12 @@ class _MapPageState extends State<MapPage> {
             width: 300,
             offset: 100,
           ),
-          const Positioned(
+          /*const Positioned(
             left: 0,
             right: 0,
             bottom: 0,
             child: NavBar(),
-          )
+          )*/
         ],
       ),
     );
