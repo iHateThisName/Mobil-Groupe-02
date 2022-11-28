@@ -4,11 +4,13 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp_project/services/database.dart';
+import 'package:provider/provider.dart';
 import '../../custom_widgets/navigation_bar.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:clippy_flutter/triangle.dart';
 
 import 'package:geoflutterfire2/geoflutterfire2.dart';
+import 'package:location/location.dart' as current_location;
 
 
 
@@ -45,6 +47,19 @@ class _MapPageState extends State<MapPage> {
   late BitmapDescriptor markerIcon;
 
   String inputAddress = '';
+  LocationData? currentLocation;
+
+  void getCurrentLocation() {
+    current_location.Location location = current_location.Location();
+    location.getLocation().then(
+      (location) {
+      currentLocation = location;
+    }
+    );
+
+
+  }
+
 
   /// Dispose method that releases memory to the controller when the state object is removed.
   @override
@@ -65,6 +80,7 @@ class _MapPageState extends State<MapPage> {
     final Marker marker = Marker(
       markerId: markerId,
       icon: markerIcon,
+
       //We specify where to find the marker position by locating the geopoints in the database
       position: LatLng(specify['location'].latitude, specify['location'].longitude),
       //infoWindow: InfoWindow(title: 'Toalett', snippet: specify['address']),
@@ -85,26 +101,40 @@ class _MapPageState extends State<MapPage> {
                   height: double.infinity,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.wc_outlined,
-                          color: Colors.white,
-                          size: 50,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.wc_outlined,
+                              color: Colors.white,
+                              size: 50,
+                            ),
+                            const SizedBox(
+                              width: 8.0,
+                            ),
+                            Text(
+                              specify['address'],
+                              style:
+                              Theme.of(context).textTheme.headline6?.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          width: 8.0,
-                        ),
-                        Text(
-                          specify['address'],
-                          style:
-                          Theme.of(context).textTheme.headline6?.copyWith(
-                            color: Colors.white,
-                          ),
+                        SimpleDialogOption(
+                          child: const Text('Delete toilet',
+                              style: TextStyle(color: Colors.blue,
+                                fontSize: 14,)),
+                          onPressed: () {
+                            null;
+                            Navigator.of(context).pop();
+                          },
                         ),
                       ],
-                    ),
+                    )
 
                   ),
                 ),
@@ -142,8 +172,12 @@ class _MapPageState extends State<MapPage> {
       'location': GeoPoint(positionLatLng.latitude, positionLatLng.longitude),
       'address': inputAddress
     });
-
   }
+  
+  Future<void> deleteMarker(markerId) async{
+    await _firestore.collection('markers').doc(markerId).delete();
+  }
+
 
   Future addMarker() async {
     await showDialog(
@@ -188,14 +222,20 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState(){
     getMarkerData();
-    super.initState();
-
+    getCurrentLocation();
     setMarkerIcons();
-
     DefaultAssetBundle.of(context).loadString('assets/maptheme/dark_theme.json').then((value) {
       mapTheme = value;
     });
+    super.initState();
+    
+  }
 
+  void _rebuildMarker() async{
+    await Future.delayed(Duration(seconds: 10));
+    setState(() {
+      Set<Marker>.of(markers.values);
+    });
   }
 
 
@@ -214,7 +254,11 @@ class _MapPageState extends State<MapPage> {
       appBar: AppBar(
         title: const Text('Google Maps'),
         leading: IconButton(
-            onPressed: addMarker,
+            onPressed: () {
+              setState(() {
+                addMarker();
+              });
+            } ,
             icon: const Icon(Icons.add)
         ),
         centerTitle: true,
@@ -251,7 +295,7 @@ class _MapPageState extends State<MapPage> {
           ),
           CustomInfoWindow(
             controller: _customInfoWindowController,
-            height: 75,
+            height: 100,
             width: 300,
             offset: 100,
           ),
