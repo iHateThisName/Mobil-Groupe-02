@@ -47,7 +47,7 @@ class _MapPageState extends State<MapPage> {
   late BitmapDescriptor markerIcon;
 
   String inputAddress = '';
-  LocationData? currentLocation;
+  current_location.LocationData? currentLocation;
 
   void getCurrentLocation() {
     current_location.Location location = current_location.Location();
@@ -56,8 +56,6 @@ class _MapPageState extends State<MapPage> {
       currentLocation = location;
     }
     );
-
-
   }
 
 
@@ -243,13 +241,6 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
 
-    CameraPosition initialCameraPosition = const CameraPosition(
-        zoom: camZoom,
-        tilt: camTilt,
-        bearing: camBearing,
-        target: sourceLocation
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Google Maps'),
@@ -271,7 +262,13 @@ class _MapPageState extends State<MapPage> {
             top: 0,
             bottom: 0,
             // Adds google maps as a child
-            child: GoogleMap(
+            child: currentLocation == null
+                ? const Center(child: Text("Loading"))
+                : GoogleMap(
+              initialCameraPosition: CameraPosition(
+                  bearing: 0,
+                  target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+                  zoom: 16),
               // Hides the info window when you tap somewhere
               onTap: (position) {
                 _customInfoWindowController.hideInfoWindow!();
@@ -285,7 +282,7 @@ class _MapPageState extends State<MapPage> {
               // We set a normal map type
               mapType: MapType.normal,
               // The initial camera position when we enter the app
-              initialCameraPosition: initialCameraPosition,
+
 
               onMapCreated: (GoogleMapController controller){
                 controller.setMapStyle(mapTheme);
