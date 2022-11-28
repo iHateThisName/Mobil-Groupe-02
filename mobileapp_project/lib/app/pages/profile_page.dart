@@ -22,6 +22,9 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _profileExist = false;
   bool _singOutPressed = false;
   String _username = "null";
+  int? _score;
+
+  //username = email right now
   String _email = "Email was not updated";
 
   Future<void> _signOut(BuildContext context) async {
@@ -86,13 +89,13 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildScore() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        Icon(
+      children: [
+        const Icon(
           FontAwesomeIcons.trophy,
           size: 40,
         ),
         Text(
-          " points",
+          " $_score points",
           style: TextStyle(fontSize: 25),
         )
       ],
@@ -155,6 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
       setState(() {
         _username = "${profile?.username}";
+        _score = profile?.score;
       });
     } on FirebaseException catch (e) {
       print(e.stackTrace);
