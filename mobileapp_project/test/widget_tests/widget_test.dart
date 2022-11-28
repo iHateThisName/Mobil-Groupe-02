@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobileapp_project/main.dart';
-import 'package:mobileapp_project/login_page.dart';
+
 
 void main() {
   testWidgets('Widget tests', (WidgetTester tester) async {
@@ -20,8 +20,14 @@ void main() {
     expect(elevatedButton, findsWidgets);
 
     // Expects to find one specific button with the input text
-    var specificButton = find.text('Logg inn gjennom Facebook');
+    var specificButton = find.text('Logg inn gjennom E-Mail');
     expect(specificButton, findsOneWidget);
+
+    var specificButton2 = find.text('Fortsett uten profil');
+    expect(specificButton2, findsOneWidget);
+
+
+
   });
 
 }

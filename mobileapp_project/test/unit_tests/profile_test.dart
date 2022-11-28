@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 
 void main() {
@@ -8,4 +9,5 @@ void main() {
     expect(profile.username, 'Vegard');
     expect(profile.score, 50);
   });
+
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mobileapp_project/app/pages/welcome.dart';
-import 'package:mobileapp_project/login_page.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
 import 'app/pages/login_page.dart';
@@ -10,6 +9,7 @@ import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'app/pages/landing_page.dart';
 import 'package:mobileapp_project/app/pages/welcome.dart';
+import 'package:mobileapp_project/app/pages/landing_page.dart';
 
 
 /// Main function that runs the app. It decides where the program starts.
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blueGrey,
           backgroundColor: Colors.grey
         ),
-        home: isViewed != 0 ? OnWelcome() : LoginPage(),
+        home: isViewed != 0 ? OnWelcome() : LandingPage(),
       ),
     );
   }

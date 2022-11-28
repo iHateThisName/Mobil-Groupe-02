@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp_project/app/pages/welcome_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-import '../../login_page.dart';
 import 'home_page.dart';
+import 'login_page.dart';
 
 
 class OnWelcome extends StatefulWidget {
@@ -24,7 +22,7 @@ class _OnWelcomeState extends State<OnWelcome> {
         desc: ""
     ),
     WelcomePage(
-      img: 'images/hvor-kan-jeg-drite-logo.png',
+      img: 'images/toiletmarker3.jpg',
       text: "Se etter toalett markørene",
       button: Colors.blue,
       bg: Colors.white,
