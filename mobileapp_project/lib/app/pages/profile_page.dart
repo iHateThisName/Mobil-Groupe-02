@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
@@ -20,14 +21,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
   bool _profileExist = false;
   bool _singOutPressed = false;
-  String _username = "";
+  String _username = "null";
   String _email = "Email was not updated";
 
   Future<void> _signOut(BuildContext context) async {
     try {
       final auth = Provider.of<AuthBase>(context, listen: false);
       final database = Provider.of<Database>(context, listen: false);
-      // //Deleting anonymous Profile when user logs out
+
+      // Deleting anonymous Profile when user logs out
       if (auth.isAnonymous()) {
         await database.deleteProfile();
       }
@@ -69,30 +71,53 @@ class _ProfilePageState extends State<ProfilePage> {
         ));
   }
 
+  /// Builds the main context for the profile page.
   Column buildContext(BuildContext context) {
     _getProfile(context);
     bool usernameAvailable = (_username == "null");
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        buildBottomBorderUnderWidget(_buildScore()),
         buildBottomBorderUnderWidget(buildUsername(usernameAvailable)),
       ],
     );
   }
 
-  Container buildBottomBorderUnderWidget(Widget childWidget) {
-    return Container(
-      margin: const EdgeInsets.only(left: 50, right: 50),
-      alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.black26,
-            width: 2,
+  Widget _buildScore() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        Icon(
+          FontAwesomeIcons.trophy,
+          size: 40,
+        ),
+        Text(
+          " points",
+          style: TextStyle(fontSize: 25),
+        )
+      ],
+    );
+  }
+
+  Padding buildBottomBorderUnderWidget(Widget childWidget) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        margin: const EdgeInsets.only(left: 50, right: 50),
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Colors.black26,
+              width: 2,
+            ),
           ),
         ),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: childWidget,
+        ),
       ),
-      child: childWidget,
     );
   }
 
