@@ -224,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: ClipRRect(
         borderRadius: borderRadius,
         child: Image.asset(
-          "images/hvor-kan-jeg-drite-logo.png",
+          "images/hvor-kan-jeg-drite-logo-profile.png",
           width: double.infinity,
           height: _coverImageHeight,
           fit: BoxFit.cover,
