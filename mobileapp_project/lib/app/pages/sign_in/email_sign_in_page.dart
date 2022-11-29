@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp_project/app/sign_in/email_sign_in_stateful.dart';
+import 'package:mobileapp_project/app/pages/sign_in/email_sign_in_stateful.dart';
 
 
 class EmailSignInPage extends StatelessWidget  {
