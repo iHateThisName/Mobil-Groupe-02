@@ -135,12 +135,15 @@ class _MapPageState extends State<MapPage> {
 
   /// Gets the data of the markers position and address from the marker collection in the database.
   getMarkerData() async {
-    FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
-      if (myMapData.docs.isNotEmpty) {
-        for (int i = 0; i < myMapData.docs.length; i++) {
-          initMarker(myMapData.docs[i].data(), myMapData.docs[i].id);
+    final docRef = FirebaseFirestore.instance.collection('markers');
+    docRef.snapshots(includeMetadataChanges: true).listen((event) {
+      FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
+        if (myMapData.docs.isNotEmpty) {
+          for (int i = 0; i < myMapData.docs.length; i++) {
+            initMarker(myMapData.docs[i].data(), myMapData.docs[i].id);
+          }
         }
-      }
+      });
     });
   }
 
@@ -229,7 +232,7 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           currentLocation == null
-              ? const Center(child: Text("Loading"))
+              ? const Center(child: CircularProgressIndicator())
               : GoogleMap(
             initialCameraPosition: CameraPosition(
                 bearing: 0,
