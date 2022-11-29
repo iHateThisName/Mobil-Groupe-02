@@ -9,18 +9,23 @@ import 'package:mobileapp_project/main.dart' as app;
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
+import 'package:mobileapp_project/app/pages/welcome.dart';
 
 
 class MockAuth extends Mock implements AuthBase{}
 
 void main(){
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   MockAuth? mockAuth;
 
   setUp(() {
     mockAuth = MockAuth();
   });
 
+/*
   Future<void> pumpEmailSignIn(WidgetTester tester) async{
+    print('mockAuth' + mockAuth.toString());
     await tester.pumpWidget(
       Provider<MockAuth>(
         create: (_) => mockAuth!,
@@ -31,21 +36,46 @@ void main(){
     );
   }
 
+ */
+
+
+
   group('end-to-end app test', () {
+
+    const email = 'test@test.com';
+    const password = 'password';
     
-    testWidgets('login', (WidgetTester tester) async{
-      await pumpEmailSignIn(tester);
+    testWidgets('login test', (WidgetTester tester) async{
+      app.main();
+      await tester.pumpAndSettle();
+
+      final nextButton = find.byType(TextButton);
+      await tester.tap(nextButton);
+      await Future.delayed(Duration(seconds: 1));
+      await tester.pumpAndSettle();
+
+      final emailLoginButton = find.byType(CustomElevatedButton).first;
+      await tester.tap(emailLoginButton);
+      await Future.delayed(Duration(seconds: 1));
+
+      await tester.pumpAndSettle();
 
       final emailFormField = find.byType(TextField).first;
       expect(emailFormField, findsOneWidget);
+      await tester.enterText(emailFormField, email);
+
       final passwordFormField = find.byType(TextField).last;
       expect(passwordFormField, findsOneWidget);
+      await tester.enterText(passwordFormField, password);
+      await Future.delayed(Duration(seconds: 1));
 
-      await tester.enterText(emailFormField, 'test@test.com');
-      await tester.enterText(passwordFormField, 'password');
+      await tester.pumpAndSettle();
 
-      final signInButton = find.text('Sign in');
+      final signInButton = find.byType(CustomElevatedButton).first;
       await tester.tap(signInButton);
+      await Future.delayed(Duration(seconds: 1));
+
+      //expect(find.byKey(Key('profile_button')), findsOneWidget);
 
     },);
   });

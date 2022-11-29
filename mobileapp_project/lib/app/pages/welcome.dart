@@ -56,6 +56,7 @@ class _OnWelcomeState extends State<OnWelcome> {
         elevation: 0,
         actions: [
           TextButton(
+            key: Key('skip_button'),
               onPressed: () async {
                 await _storeWelcomeInfo();
                 Navigator.pushReplacement(context,

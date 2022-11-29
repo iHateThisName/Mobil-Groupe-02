@@ -259,6 +259,7 @@ class _MapPageState extends State<MapPage> {
       leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
       actions: [
         IconButton(
+          key: Key('profile_button'),
           onPressed: () => _showProfilePage(context),
           icon: const Icon(Icons.person),
         ),
