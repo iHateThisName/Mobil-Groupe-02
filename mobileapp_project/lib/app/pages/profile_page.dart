@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
-import 'package:mobileapp_project/app/profile/profile_top_section.dart';
+import 'package:mobileapp_project/app/pages/profile/profile_body_section.dart';
+import 'package:mobileapp_project/app/pages/profile/profile_top_section.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,6 @@ class ProfilePage extends StatefulWidget {
 /// State subclass of ProfilePage.
 
 class _ProfilePageState extends State<ProfilePage> {
-
   /// A Boolean that informs if the project have return a profile from the database.
   bool _profileExist = false;
 
@@ -40,6 +40,9 @@ class _ProfilePageState extends State<ProfilePage> {
   /// Value is null if failed to retrieve the score from the user profile.
   /// Value is also null when retrieving the user profile.
   int? _score;
+
+
+  Profile? _profile;
 
   /// Sign outs the user.
   ///
@@ -62,8 +65,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+
     if (!_profileExist && !_singOutPressed) {
       _createProfile(context);
+      _getProfile(context);
     }
     return Scaffold(
         appBar: AppBar(
@@ -87,86 +92,18 @@ class _ProfilePageState extends State<ProfilePage> {
         body: ListView(
           children: [
             const ProfileTopPage(),
-            _buildMainData(context),
+            _profileExist ? ProfileBodyPage(_profile!) : _progressIndicator()
           ],
         ));
   }
 
-  /// Builds the main context for the profile page.
-  Column _buildMainData(BuildContext context) {
-    _getProfile(context);
-    bool usernameAvailable = (_username == "null");
-    return Column(
-      children: [
-        buildBottomBorderUnderWidget(_buildScore()),
-        buildBottomBorderUnderWidget(buildUsername(usernameAvailable)),
-      ],
-    );
-  }
+  SizedBox _progressIndicator() {
 
-  Widget _buildScore() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(
-          FontAwesomeIcons.trophy,
-          size: 40,
-        ),
-        Text(
-          " $_score points",
-          style: TextStyle(fontSize: 25),
-        )
-      ],
-    );
-  }
-
-  Padding buildBottomBorderUnderWidget(Widget childWidget) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        margin: const EdgeInsets.only(left: 50, right: 50),
-        alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.black26,
-              width: 2,
-            ),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: childWidget,
-        ),
-      ),
-    );
-  }
-
-  Widget buildUsername(bool usernameAvailable) {
-    return FittedBox(
-      fit: BoxFit.fill,
-      child: usernameAvailable
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.downloading, size: 40),
-                Text(
-                  "Retrieving username",
-                  style: TextStyle(fontSize: 25),
-                ),
-              ],
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.person, size: 40),
-                Text(
-                  _username,
-                  style: const TextStyle(fontSize: 25),
-                )
-              ],
-            ),
-    );
+    return const SizedBox(
+        width: 50,
+        height: 50,
+        child: Center(
+            child: CircularProgressIndicator()));
   }
 
   _getProfile(BuildContext context) async {
@@ -175,8 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final profile = await database.getProfile();
 
       setState(() {
-        _username = "${profile?.username}";
-        _score = profile?.score;
+        _profile = profile;
       });
     } on FirebaseException catch (e) {
       print(e.stackTrace);
