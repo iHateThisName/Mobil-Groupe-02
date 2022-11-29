@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
+import 'package:mobileapp_project/app/profile/profile_top_section.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
@@ -20,14 +21,6 @@ class ProfilePage extends StatefulWidget {
 /// State subclass of ProfilePage.
 
 class _ProfilePageState extends State<ProfilePage> {
-  /// The height of the background/cover image that is placed on the top of the profile page.
-  final double _coverImageHeight = 180;
-
-  /// The padding for the distance between the profile image and the newt widget.
-  final int _profileIconPadding = 25;
-
-  /// The size of the profile image.
-  final double _profileImageSize = 44;
 
   /// A Boolean that informs if the project have return a profile from the database.
   bool _profileExist = false;
@@ -65,7 +58,6 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       print(e.toString());
     }
-    Navigator.of(context).pop();
   }
 
   @override
@@ -86,6 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 _singOutPressed = true;
                 _signOut(context);
+                Navigator.pop(context);
               },
               child: const Text("Sign Out"),
             )
@@ -93,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         body: ListView(
           children: [
-            buildTopPage(),
+            const ProfileTopPage(),
             _buildMainData(context),
           ],
         ));
@@ -188,49 +181,6 @@ class _ProfilePageState extends State<ProfilePage> {
     } on FirebaseException catch (e) {
       print(e.stackTrace);
     }
-  }
-
-  /// Builds the top part of the Profile page.
-  Container buildTopPage() {
-    return Container(
-      margin: EdgeInsets.only(bottom: _profileImageSize + _profileIconPadding),
-      child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.center,
-          children: [buildCoverImage(), buildPageHeader()]),
-    );
-  }
-
-  Positioned buildPageHeader() {
-    return Positioned(
-      top: _coverImageHeight - _profileImageSize + _profileIconPadding,
-      child: CircleAvatar(
-          radius: _profileImageSize,
-          child: Icon(
-            Icons.person,
-            size: _profileImageSize,
-          )),
-    );
-  }
-
-  Widget buildCoverImage() {
-    const borderRadius = BorderRadius.only(
-        bottomLeft: Radius.circular(100), bottomRight: Radius.circular(100));
-    return Container(
-      // color: Colors.blueGrey,
-      padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-      decoration:
-          BoxDecoration(color: Colors.blueGrey, borderRadius: borderRadius),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: Image.asset(
-          "images/hvor-kan-jeg-drite-logo-profile.png",
-          width: double.infinity,
-          height: _coverImageHeight,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
   }
 
   Future<void> _createProfile(BuildContext context) async {
