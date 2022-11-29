@@ -3,39 +3,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:mobileapp_project/app/sign_in/email_sign_in_stateful.dart';
+import 'package:mobileapp_project/custom_widgets/custom_elevatedbutton.dart';
 import 'package:mobileapp_project/main.dart' as app;
+import 'package:mobileapp_project/services/authentication.dart';
+import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
+
+
+class MockAuth extends Mock implements AuthBase{}
 
 void main(){
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  MockAuth? mockAuth;
+
+  setUp(() {
+    mockAuth = MockAuth();
+  });
+
+  Future<void> pumpEmailSignIn(WidgetTester tester) async{
+    await tester.pumpWidget(
+      Provider<MockAuth>(
+        create: (_) => mockAuth!,
+        child: MaterialApp(
+          home: Scaffold(body: EmailSignInStateful())
+        ),
+      ),
+    );
+  }
 
   group('end-to-end app test', () {
-    final emailFormField = find.byType(TextFormField).first;
-    final passwordFormField = find.byType(TextFormField).last;
-    final loginButton = find.byType(ElevatedButton).first;
     
-    testWidgets('login is working', (tester) async{
-      app.main();
-      await tester.pumpAndSettle();
+    testWidgets('login', (WidgetTester tester) async{
+      await pumpEmailSignIn(tester);
+
+      final emailFormField = find.byType(TextField).first;
+      expect(emailFormField, findsOneWidget);
+      final passwordFormField = find.byType(TextField).last;
+      expect(passwordFormField, findsOneWidget);
 
       await tester.enterText(emailFormField, 'test@test.com');
       await tester.enterText(passwordFormField, 'password');
-      await tester.pumpAndSettle();
 
-      await tester.tap(loginButton);
-      await tester.pumpAndSettle();
+      final signInButton = find.text('Sign in');
+      await tester.tap(signInButton);
 
-
-      final firstMarker = find.byType(Marker).first;
-      expect(tester.getSemantics(firstMarker), matchesSemantics(
-      hasTapAction: true,
-      isEnabled: true,
-      ),);
-
-    },
-    );
-    
-    
-    
+    },);
   });
+
 }
 

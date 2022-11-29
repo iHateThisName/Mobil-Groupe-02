@@ -46,6 +46,7 @@ class LoginPage extends StatelessWidget {
             borderRadius: 5,
             onPressed: () => _logInWithEmail(context),
             child: const SizedBox(
+              key: Key('epost_login'),
               child: Text('Logg inn gjennom E-Mail'),
             ),
           ),
@@ -59,6 +60,7 @@ class LoginPage extends StatelessWidget {
             borderRadius: 5,
             onPressed: () => _logInAnonymously(context),
             child: const SizedBox(
+              key: const Key('anonym_login'),
               child: Text('Fortsett uten profil'),
             ),
           ),

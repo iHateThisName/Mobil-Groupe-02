@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp_project/app/pages/welcome_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
+import 'landing_page.dart';
 import 'login_page.dart';
 
 class OnWelcome extends StatefulWidget {
@@ -135,7 +136,7 @@ class _OnWelcomeState extends State<OnWelcome> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()));
+                                builder: (context) => LandingPage()));
                       }
                       _pageController.nextPage(
                           duration: Duration(microseconds: 300),
