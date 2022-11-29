@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// An abstract class AuthBase that represents as a common base for all authentication methods.
@@ -10,6 +9,8 @@ abstract class AuthBase {
   Future<void> signOut();
   Future<User?> signInWithEmailAndPassword(String email, String password);
   Future<User?> createUserWithEmailAndPassword(String email, String password);
+  User? getUser();
+  bool isAnonymous();
 
 }
 
@@ -18,6 +19,7 @@ abstract class AuthBase {
 class Auth implements AuthBase {
   // A final variable that holds the instance of the firebase authentication sdk.
   final _firebaseAuth = FirebaseAuth.instance;
+  bool anonymous = false;
 
   /// Returns a stream of a User element when the sign-in state is changed
   @override
@@ -28,6 +30,7 @@ class Auth implements AuthBase {
   /// Updates authStateChanges().
   @override
   Future<User?> signInAnonymously() async {
+    anonymous = true;
     final userCredential = await _firebaseAuth.signInAnonymously();
     return userCredential.user;
   }
@@ -46,6 +49,7 @@ class Auth implements AuthBase {
   @override
   Future<User?> signInWithEmailAndPassword(
       String email, String password) async {
+    anonymous = false;
     final userCredential = await _firebaseAuth.signInWithCredential(
       EmailAuthProvider.credential(email: email, password: password),
     );
@@ -65,7 +69,16 @@ class Auth implements AuthBase {
     return userCredential.user;
   }
 
-  //todo Google
+  @override
+  User? getUser() {
+    return _firebaseAuth.currentUser;
+  }
 
-  //todo Facebook
+  @override
+  bool isAnonymous() {
+    return anonymous;
+  }
+
+
+
 }

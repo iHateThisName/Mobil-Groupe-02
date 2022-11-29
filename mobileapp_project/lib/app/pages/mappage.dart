@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -7,12 +8,17 @@ import '../../custom_widgets/like_button.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:location/location.dart' as current_location;
 
+import 'package:mobileapp_project/app/pages/profile_page.dart';
+import 'package:provider/provider.dart';
+import '../../services/database.dart';
 final _firestore = FirebaseFirestore.instance;
 
 /// A class that represents our Map page.
 /// Creates a state subclass.
 class MapPage extends StatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
+  const MapPage({Key? key, required this.user}) : super(key: key);
+
+  final User user;
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -20,12 +26,11 @@ class MapPage extends StatefulWidget {
 
 /// A state subclass of the Map page.
 class _MapPageState extends State<MapPage> {
-
   /// Fields including two controllers for the map and the marker info window, collection of key/value pair in markers (MarkerId, Marker), theme and icon.
   final CustomInfoWindowController _customInfoWindowController =
-  CustomInfoWindowController();
+      CustomInfoWindowController();
   late GoogleMapController controller;
-  Map <MarkerId, Marker> markers = <MarkerId, Marker>{};
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String mapTheme = '';
   late BitmapDescriptor markerIcon;
   String inputAddress = '';
@@ -50,8 +55,7 @@ class _MapPageState extends State<MapPage> {
   /// Initializes the map markers using key/value pairs
   /// Gets the markers from our cloud firestore
 
-  void initMarker(specify, specifyId) async{
-
+  void initMarker(specify, specifyId) async {
     var markerIdVal = specifyId;
     final MarkerId markerId = MarkerId(markerIdVal);
 
@@ -119,8 +123,8 @@ class _MapPageState extends State<MapPage> {
               ),
             ],
           ),
-            // Places the info window at the same position as the chosen marker
-            LatLng(specify['location'].latitude, specify['location'].longitude),
+          // Places the info window at the same position as the chosen marker
+          LatLng(specify['location'].latitude, specify['location'].longitude),
         );
       },
     );
@@ -131,11 +135,10 @@ class _MapPageState extends State<MapPage> {
 
   /// Gets the data of the markers position and address from the marker collection in the database.
   getMarkerData() async {
-    FirebaseFirestore.instance.collection('markers').get().then((myMapData){
-      if(myMapData.docs.isNotEmpty){
-        for(int i=0; i<myMapData.docs.length; i++){
-          initMarker(
-              myMapData.docs[i].data(), myMapData.docs[i].id);
+    FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
+      if (myMapData.docs.isNotEmpty) {
+        for (int i = 0; i < myMapData.docs.length; i++) {
+          initMarker(myMapData.docs[i].data(), myMapData.docs[i].id);
         }
       }
     });
@@ -174,8 +177,7 @@ class _MapPageState extends State<MapPage> {
               },
             ),
             SimpleDialogOption(
-              child: const Text('Add',
-              style: TextStyle(color: Colors.blue)),
+              child: const Text('Add', style: TextStyle(color: Colors.blue)),
               onPressed: () {
                 _addGeoPoint();
                 Navigator.of(context).pop();
@@ -200,7 +202,7 @@ class _MapPageState extends State<MapPage> {
   /// initState method which is called when an object for the stateful widget is created and inserted.
   /// Initializes the marker data, map theme and marker icons.
   @override
-  void initState(){
+  void initState() {
     getMarkerData();
     getCurrentLocation();
     setMarkerIcons();
@@ -223,14 +225,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Google Maps'),
-        leading: IconButton(
-            onPressed: addMarker,
-            icon: const Icon(Icons.add)
-        ),
-        centerTitle: true,
-      ),
+      appBar: buildAppBar(),
       body: Stack(
         children: [
           currentLocation == null
@@ -265,6 +260,34 @@ class _MapPageState extends State<MapPage> {
             offset: 100,
           ),
         ],
+      ),
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      title: const Text('Google Maps'),
+      leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
+      actions: [
+        IconButton(
+          onPressed: () => _showProfilePage(context),
+          icon: const Icon(Icons.person),
+        ),
+      ],
+      centerTitle: true,
+    );
+  }
+
+  /// Method that shows the profile page of the current user
+  /// Gets user from the database.
+
+  void _showProfilePage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (context) => Provider<Database>(
+            create: (_) => FireStoreDatabase(uid: widget.user.uid),
+            child: ProfilePage()),
       ),
     );
   }
