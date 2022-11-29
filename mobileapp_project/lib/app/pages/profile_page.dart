@@ -126,18 +126,18 @@ class _ProfilePageState extends State<ProfilePage> {
       Profile? profile = await database.getProfile();
 
       //The user should never be null, because of the landing_page
-      User user = auth.getUser()!;
+      User? user = auth.getUser();
       String authUsername = "Missing Username";
 
-      if (user.email != null) {
-        authUsername = user.email!;
+      if (user?.email != null) {
+        authUsername = user!.email!;
       } else {
         authUsername = "Anonymous User";
       }
 
       if (profile == null) {
         await database.createProfile(
-            Profile(username: authUsername, score: 0, email: user.email));
+            Profile(username: authUsername, score: 0, email: user?.email));
       }
       _profileExist = true;
     } on FirebaseException catch (e) {
