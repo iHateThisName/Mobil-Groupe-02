@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp_project/app/sign_in/email_sign_in_page.dart';
+import 'package:mobileapp_project/app/pages/sign_in/email_sign_in_page.dart';
 import 'package:mobileapp_project/custom_widgets/custom_elevatedbutton.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
