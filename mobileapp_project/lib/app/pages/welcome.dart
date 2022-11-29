@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/app/pages/landing_page.dart';
 import 'package:mobileapp_project/app/pages/welcome_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'home_page.dart';
-import 'login_page.dart';
 
 class OnWelcome extends StatefulWidget {
   @override
@@ -58,7 +57,7 @@ class _OnWelcomeState extends State<OnWelcome> {
               onPressed: () async {
                 await _storeWelcomeInfo();
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginPage()));
+                    MaterialPageRoute(builder: (context) => LandingPage()));
               },
               child: Text(
                 "Skip",
@@ -135,7 +134,7 @@ class _OnWelcomeState extends State<OnWelcome> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()));
+                                builder: (context) => LandingPage()));
                       }
                       _pageController.nextPage(
                           duration: Duration(microseconds: 300),
