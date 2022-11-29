@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
+import 'package:mobileapp_project/app/pages/profile/profile_body_section.dart';
+import 'package:mobileapp_project/app/pages/profile/profile_top_section.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
@@ -20,15 +22,6 @@ class ProfilePage extends StatefulWidget {
 /// State subclass of ProfilePage.
 
 class _ProfilePageState extends State<ProfilePage> {
-  /// The height of the background/cover image that is placed on the top of the profile page.
-  final double _coverImageHeight = 180;
-
-  /// The padding for the distance between the profile image and the newt widget.
-  final int _profileIconPadding = 25;
-
-  /// The size of the profile image.
-  final double _profileImageSize = 44;
-
   /// A Boolean that informs if the project have return a profile from the database.
   bool _profileExist = false;
 
@@ -48,6 +41,9 @@ class _ProfilePageState extends State<ProfilePage> {
   /// Value is also null when retrieving the user profile.
   int? _score;
 
+
+  Profile? _profile;
+
   /// Sign outs the user.
   ///
   /// Delete the users profile if the user is anonymous.
@@ -65,13 +61,14 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       print(e.toString());
     }
-    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+
     if (!_profileExist && !_singOutPressed) {
       _createProfile(context);
+      _getProfile(context);
     }
     return Scaffold(
         appBar: AppBar(
@@ -86,6 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 _singOutPressed = true;
                 _signOut(context);
+                Navigator.pop(context);
               },
               child: const Text("Sign Out"),
             )
@@ -93,87 +91,19 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         body: ListView(
           children: [
-            buildTopPage(),
-            _buildMainData(context),
+            const ProfileTopPage(),
+            _profileExist ? ProfileBodyPage(_profile!) : _progressIndicator()
           ],
         ));
   }
 
-  /// Builds the main context for the profile page.
-  Column _buildMainData(BuildContext context) {
-    _getProfile(context);
-    bool usernameAvailable = (_username == "null");
-    return Column(
-      children: [
-        buildBottomBorderUnderWidget(_buildScore()),
-        buildBottomBorderUnderWidget(buildUsername(usernameAvailable)),
-      ],
-    );
-  }
+  SizedBox _progressIndicator() {
 
-  Widget _buildScore() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(
-          FontAwesomeIcons.trophy,
-          size: 40,
-        ),
-        Text(
-          " $_score points",
-          style: TextStyle(fontSize: 25),
-        )
-      ],
-    );
-  }
-
-  Padding buildBottomBorderUnderWidget(Widget childWidget) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        margin: const EdgeInsets.only(left: 50, right: 50),
-        alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.black26,
-              width: 2,
-            ),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: childWidget,
-        ),
-      ),
-    );
-  }
-
-  Widget buildUsername(bool usernameAvailable) {
-    return FittedBox(
-      fit: BoxFit.fill,
-      child: usernameAvailable
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.downloading, size: 40),
-                Text(
-                  "Retrieving username",
-                  style: TextStyle(fontSize: 25),
-                ),
-              ],
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.person, size: 40),
-                Text(
-                  _username,
-                  style: const TextStyle(fontSize: 25),
-                )
-              ],
-            ),
-    );
+    return const SizedBox(
+        width: 50,
+        height: 50,
+        child: Center(
+            child: CircularProgressIndicator()));
   }
 
   _getProfile(BuildContext context) async {
@@ -182,55 +112,11 @@ class _ProfilePageState extends State<ProfilePage> {
       final profile = await database.getProfile();
 
       setState(() {
-        _username = "${profile?.username}";
-        _score = profile?.score;
+        _profile = profile;
       });
     } on FirebaseException catch (e) {
       print(e.stackTrace);
     }
-  }
-
-  /// Builds the top part of the Profile page.
-  Container buildTopPage() {
-    return Container(
-      margin: EdgeInsets.only(bottom: _profileImageSize + _profileIconPadding),
-      child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.center,
-          children: [buildCoverImage(), buildPageHeader()]),
-    );
-  }
-
-  Positioned buildPageHeader() {
-    return Positioned(
-      top: _coverImageHeight - _profileImageSize + _profileIconPadding,
-      child: CircleAvatar(
-          radius: _profileImageSize,
-          child: Icon(
-            Icons.person,
-            size: _profileImageSize,
-          )),
-    );
-  }
-
-  Widget buildCoverImage() {
-    const borderRadius = BorderRadius.only(
-        bottomLeft: Radius.circular(100), bottomRight: Radius.circular(100));
-    return Container(
-      // color: Colors.blueGrey,
-      padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-      decoration:
-          BoxDecoration(color: Colors.blueGrey, borderRadius: borderRadius),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: Image.asset(
-          "images/hvor-kan-jeg-drite-logo-profile.png",
-          width: double.infinity,
-          height: _coverImageHeight,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
   }
 
   Future<void> _createProfile(BuildContext context) async {
@@ -240,18 +126,18 @@ class _ProfilePageState extends State<ProfilePage> {
       Profile? profile = await database.getProfile();
 
       //The user should never be null, because of the landing_page
-      User user = auth.getUser()!;
+      User? user = auth.getUser();
       String authUsername = "Missing Username";
 
-      if (user.email != null) {
-        authUsername = user.email!;
+      if (user?.email != null) {
+        authUsername = user!.email!;
       } else {
         authUsername = "Anonymous User";
       }
 
       if (profile == null) {
         await database.createProfile(
-            Profile(username: authUsername, score: 0, email: user.email));
+            Profile(username: authUsername, score: 0, email: user?.email));
       }
       _profileExist = true;
     } on FirebaseException catch (e) {

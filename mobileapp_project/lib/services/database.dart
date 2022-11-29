@@ -12,6 +12,7 @@ abstract class Database {
   Future<void> createProfile(Profile profile);
   Future<Profile?> getProfile();
   Future<void> deleteProfile();
+  Future<QuerySnapshot<Map<String, dynamic>>?> getMarkersSnapshot();
 }
 
 class FireStoreDatabase implements Database {
@@ -61,6 +62,14 @@ class FireStoreDatabase implements Database {
     final reference = FirebaseFirestore.instance.doc(path);
     print("$path: $data");
     await reference.set(data);
+  }
+
+  @override
+  Future<QuerySnapshot<Map<String, dynamic>>?> getMarkersSnapshot() async {
+    FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
+      return myMapData;
+    });
+    return null;
   }
 
 }

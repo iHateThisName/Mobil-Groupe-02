@@ -4,26 +4,17 @@ import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
+import '../../custom_widgets/like_button.dart';
 import 'package:custom_info_window/custom_info_window.dart';
+import 'package:location/location.dart' as current_location;
 
-import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:mobileapp_project/app/pages/profile_page.dart';
 import 'package:provider/provider.dart';
-
 import '../../services/database.dart';
-
-// Constant fields to make it easier to change the default map properties like location and zoom.
-const LatLng sourceLocation = LatLng(62.472229, 6.149482);
-const double camZoom = 16;
-const double camTilt = 0;
-const double camBearing = 0;
-
-final geo = GeoFlutterFire();
 final _firestore = FirebaseFirestore.instance;
 
 /// A class that represents our Map page.
 /// Creates a state subclass.
-
 class MapPage extends StatefulWidget {
   const MapPage({Key? key, required this.user}) : super(key: key);
 
@@ -34,18 +25,25 @@ class MapPage extends StatefulWidget {
 }
 
 /// A state subclass of the Map page.
-
 class _MapPageState extends State<MapPage> {
   /// Fields including two controllers for the map and the marker info window, collection of key/value pair in markers (MarkerId, Marker), theme and icon.
-
   final CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
   late GoogleMapController controller;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String mapTheme = '';
   late BitmapDescriptor markerIcon;
-
   String inputAddress = '';
+  current_location.LocationData? currentLocation;
+
+  void getCurrentLocation() {
+    current_location.Location location = current_location.Location();
+    location.getLocation().then(
+      (location) {
+      currentLocation = location;
+    }
+    );
+  }
 
   /// Dispose method that releases memory to the controller when the state object is removed.
   @override
@@ -65,10 +63,9 @@ class _MapPageState extends State<MapPage> {
     final Marker marker = Marker(
       markerId: markerId,
       icon: markerIcon,
+
       //We specify where to find the marker position by locating the geopoints in the database
-      position:
-          LatLng(specify['location'].latitude, specify['location'].longitude),
-      //infoWindow: InfoWindow(title: 'Toalett', snippet: specify['address']),
+      position: LatLng(specify['location'].latitude, specify['location'].longitude),
 
       // By using the custom info window package, an info window will show when clicking a marker.
       // Styled with colors, borders and icons.
@@ -86,26 +83,41 @@ class _MapPageState extends State<MapPage> {
                   height: double.infinity,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.wc_outlined,
-                          color: Colors.white,
-                          size: 50,
-                        ),
-                        const SizedBox(
-                          width: 8.0,
-                        ),
-                        Text(
-                          specify['address'],
-                          style:
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.wc_outlined,
+                              color: Colors.white,
+                              size: 50,
+                            ),
+                            const SizedBox(
+                              width: 8.0,
+                            ),
+                            Text(
+                              specify['address'],
+                              style:
                               Theme.of(context).textTheme.headline6?.copyWith(
-                                    color: Colors.white,
-                                  ),
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
+                        const like_button(),
+                        /*SimpleDialogOption(
+                          child: const Text('Delete',
+                              style: TextStyle(color: Colors.blue,
+                                fontSize: 14,)),
+                          onPressed: () {
+                            null;
+                            Navigator.of(context).pop();
+                          },
+                        ),*/
                       ],
-                    ),
+                    )
                   ),
                 ),
               ),
@@ -123,24 +135,31 @@ class _MapPageState extends State<MapPage> {
 
   /// Gets the data of the markers position and address from the marker collection in the database.
   getMarkerData() async {
-    FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
-      if (myMapData.docs.isNotEmpty) {
-        for (int i = 0; i < myMapData.docs.length; i++) {
-          initMarker(myMapData.docs[i].data(), myMapData.docs[i].id);
+    final docRef = FirebaseFirestore.instance.collection('markers');
+    docRef.snapshots(includeMetadataChanges: true).listen((event) {
+      FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
+        if (myMapData.docs.isNotEmpty) {
+          for (int i = 0; i < myMapData.docs.length; i++) {
+            initMarker(myMapData.docs[i].data(), myMapData.docs[i].id);
+          }
         }
-      }
+      });
     });
   }
 
   Future<DocumentReference> _addGeoPoint() async {
     List<Location> pos = await locationFromAddress(inputAddress);
-    /*GeoFirePoint point = geo.point(latitude: 62.47094, longitude: 6.175);*/
     LatLng positionLatLng = LatLng(pos.first.latitude, pos.first.longitude);
 
     return _firestore.collection('markers').add({
       'location': GeoPoint(positionLatLng.latitude, positionLatLng.longitude),
       'address': inputAddress
     });
+  }
+  
+  // TODO - not done
+  Future<void> deleteMarker(markerId) async{
+    await _firestore.collection('markers').doc(markerId).delete();
   }
 
   Future addMarker() async {
@@ -166,6 +185,11 @@ class _MapPageState extends State<MapPage> {
                 _addGeoPoint();
                 Navigator.of(context).pop();
               },
+              /*onPressed: () async{
+                _addGeoPoint();
+                await Navigator.of(context).push(MaterialPageRoute(builder: (context) => MapPage()));
+                setState(() {});
+              },*/
             )
           ],
         );
@@ -175,8 +199,7 @@ class _MapPageState extends State<MapPage> {
 
   /// Sets a custom icon for the markers.
   void setMarkerIcons() async {
-    markerIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), "images/toiletmarker3.png");
+    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker3.png");
   }
 
   /// initState method which is called when an object for the stateful widget is created and inserted.
@@ -184,70 +207,61 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     getMarkerData();
-    super.initState();
-
+    getCurrentLocation();
     setMarkerIcons();
-
-    DefaultAssetBundle.of(context)
-        .loadString('assets/maptheme/dark_theme.json')
-        .then((value) {
+    //refreshMarkers();
+    DefaultAssetBundle.of(context).loadString('assets/maptheme/dark_theme.json').then((value) {
       mapTheme = value;
+    });
+    super.initState();
+  }
+
+  // TODO
+  refreshMarkers() {
+    setState(() {
+      //Set<Marker>.of(markers.values).toSet();
     });
   }
 
   /// Root widget of the map page.
   @override
   Widget build(BuildContext context) {
-    CameraPosition initialCameraPosition = const CameraPosition(
-        zoom: camZoom,
-        tilt: camTilt,
-        bearing: camBearing,
-        target: sourceLocation);
 
     return Scaffold(
       appBar: buildAppBar(),
       body: Stack(
         children: [
-          Positioned(
-            right: 0,
-            left: 0,
-            top: 0,
-            bottom: 0,
-            // Adds google maps as a child
-            child: GoogleMap(
-              // Hides the info window when you tap somewhere
-              onTap: (position) {
-                _customInfoWindowController.hideInfoWindow!();
-              },
-              // Redraws info window on the marker position every time we adjust the camera
-              onCameraMove: (position) {
-                _customInfoWindowController.onCameraMove!();
-              },
-              // We make the markers that are initialized in markers to show on the map
-              markers: Set<Marker>.of(markers.values),
-              // We set a normal map type
-              mapType: MapType.normal,
-              // The initial camera position when we enter the app
-              initialCameraPosition: initialCameraPosition,
-
-              onMapCreated: (GoogleMapController controller) {
-                controller.setMapStyle(mapTheme);
-                _customInfoWindowController.googleMapController = controller;
-              },
-            ),
+          currentLocation == null
+              ? const Center(child: CircularProgressIndicator())
+              : GoogleMap(
+            initialCameraPosition: CameraPosition(
+                bearing: 0,
+                target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+                zoom: 16),
+            // Hides the info window when you tap somewhere
+            onTap: (position) {
+              _customInfoWindowController.hideInfoWindow!();
+            },
+            // Redraws info window on the marker position every time we adjust the camera
+            onCameraMove: (position) {
+              _customInfoWindowController.onCameraMove!();
+            },
+            // We make the markers that are initialized in markers to show on the map
+            markers: Set<Marker>.of(markers.values),
+            // We set a normal map type
+            mapType: MapType.normal,
+            // The initial camera position when we enter the app
+            onMapCreated: (GoogleMapController controller){
+              controller.setMapStyle(mapTheme);
+              _customInfoWindowController.googleMapController = controller;
+            },
           ),
           CustomInfoWindow(
             controller: _customInfoWindowController,
-            height: 75,
+            height: 100,
             width: 300,
             offset: 100,
           ),
-          /*const Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: NavBar(),
-          )*/
         ],
       ),
     );
