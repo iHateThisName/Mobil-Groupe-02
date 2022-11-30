@@ -29,21 +29,12 @@ class _MapPageState extends State<MapPage> {
   /// Fields including two controllers for the map and the marker info window, collection of key/value pair in markers (MarkerId, Marker), theme and icon.
   final CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
-  late GoogleMapController controller;
+  GoogleMapController? mapController;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   String mapTheme = '';
   late BitmapDescriptor markerIcon;
   String inputAddress = '';
   current_location.LocationData? currentLocation;
-
-  void getCurrentLocation() {
-    current_location.Location location = current_location.Location();
-    location.getLocation().then(
-      (location) {
-      currentLocation = location;
-    }
-    );
-  }
 
   /// Dispose method that releases memory to the controller when the state object is removed.
   @override
@@ -76,8 +67,8 @@ class _MapPageState extends State<MapPage> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.black.withBlue(20),
+                    borderRadius: BorderRadius.circular(0),
                   ),
                   width: double.infinity,
                   height: double.infinity,
@@ -147,6 +138,14 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+
+  // TODO
+  void deleteMarker(LatLng position) {
+    markers.removeWhere((MarkerId, Marker) => markers == position);
+  }
+
+  /// Adds coordinates with the correct address to the marker collection in the database
+  /// Converts an input address into latitude and longitude coordinates by using geocoding
   Future<DocumentReference> _addGeoPoint() async {
     List<Location> pos = await locationFromAddress(inputAddress);
     LatLng positionLatLng = LatLng(pos.first.latitude, pos.first.longitude);
@@ -156,12 +155,10 @@ class _MapPageState extends State<MapPage> {
       'address': inputAddress
     });
   }
-  
-  // TODO - not done
-  Future<void> deleteMarker(markerId) async{
-    await _firestore.collection('markers').doc(markerId).delete();
-  }
 
+
+  /// Dialog and option to add custom marker to the map
+  /// depending on which address is added through the TextField
   Future addMarker() async {
     await showDialog(
       context: context,
@@ -199,7 +196,7 @@ class _MapPageState extends State<MapPage> {
 
   /// Sets a custom icon for the markers.
   void setMarkerIcons() async {
-    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker3.png");
+    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker4.png");
   }
 
   /// initState method which is called when an object for the stateful widget is created and inserted.
@@ -216,11 +213,14 @@ class _MapPageState extends State<MapPage> {
     super.initState();
   }
 
-  // TODO
-  refreshMarkers() {
-    setState(() {
-      //Set<Marker>.of(markers.values).toSet();
-    });
+  /// Gets the current location of the device
+  void getCurrentLocation() {
+    current_location.Location location = current_location.Location();
+    location.getLocation().then(
+            (location) {
+          currentLocation = location;
+        }
+    );
   }
 
   /// Root widget of the map page.
@@ -232,7 +232,7 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           currentLocation == null
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.withOpacity(0.6))))
               : GoogleMap(
             initialCameraPosition: CameraPosition(
                 bearing: 0,
@@ -250,8 +250,9 @@ class _MapPageState extends State<MapPage> {
             markers: Set<Marker>.of(markers.values),
             // We set a normal map type
             mapType: MapType.normal,
-            // The initial camera position when we enter the app
+
             onMapCreated: (GoogleMapController controller){
+              mapController = controller;
               controller.setMapStyle(mapTheme);
               _customInfoWindowController.googleMapController = controller;
             },
@@ -264,12 +265,30 @@ class _MapPageState extends State<MapPage> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButton: FloatingActionButton(
+        // Move camera position to the devices current location when clicking then floating action button
+        onPressed: () {
+        mapController?.animateCamera(
+         CameraUpdate.newCameraPosition(
+           CameraPosition(target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+           zoom: 16)
+         )
+        );
+        },
+        backgroundColor: Colors.black.withBlue(30),
+        foregroundColor: Colors.blue.withOpacity(0.7),
+        child: Icon(Icons.gps_fixed_outlined),
+      ),
     );
   }
 
+  /// Builds the appbar widget
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text('Google Maps'),
+      foregroundColor: Colors.blue.withOpacity(0.5),
+      backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
+      title: Image.asset('images/my-image (1).png',),
       leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
       actions: [
         IconButton(

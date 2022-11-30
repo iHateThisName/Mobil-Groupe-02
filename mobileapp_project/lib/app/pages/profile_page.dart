@@ -72,6 +72,9 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     return Scaffold(
         appBar: AppBar(
+          foregroundColor: Colors.blue.withOpacity(0.7),
+          backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
+          title: Text('Profile page'),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
@@ -88,6 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: const Text("Sign Out"),
             )
           ],
+          centerTitle: true,
         ),
         body: ListView(
           children: [
