@@ -14,8 +14,10 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Jeg må på do!'),
-        elevation: 2.0,
+        foregroundColor: Colors.blue.withOpacity(0.5),
+        backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
+        title: Image.asset('images/my-image (1).png',),
+        centerTitle: true,
       ),
       body: _buildContent(context),
     );
@@ -42,7 +44,7 @@ class LoginPage extends StatelessWidget {
           const SizedBox(height: 10),
           const SizedBox(height: 1.0),
           CustomElevatedButton(
-            color: Colors.deepOrangeAccent,
+            color: Colors.blue.withOpacity(0.7),
             borderRadius: 5,
             onPressed: () => _logInWithEmail(context),
             child: const SizedBox(
@@ -55,7 +57,7 @@ class LoginPage extends StatelessWidget {
           ),
           const SizedBox(height: 1.0),
           CustomElevatedButton(
-            color: Colors.green,
+            color: Colors.black.withBlue(20),
             borderRadius: 5,
             onPressed: () => _logInAnonymously(context),
             child: const SizedBox(

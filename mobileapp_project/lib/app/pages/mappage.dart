@@ -269,7 +269,9 @@ class _MapPageState extends State<MapPage> {
 
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text('Google Maps'),
+      foregroundColor: Colors.blue.withOpacity(0.5),
+      backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
+      title: Image.asset('images/my-image (1).png',),
       leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
       actions: [
         IconButton(
