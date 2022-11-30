@@ -232,7 +232,7 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           currentLocation == null
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.withOpacity(0.6))))
               : GoogleMap(
             initialCameraPosition: CameraPosition(
                 bearing: 0,
