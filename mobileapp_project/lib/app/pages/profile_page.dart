@@ -91,6 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: const Text("Sign Out"),
             )
           ],
+          centerTitle: true,
         ),
         body: ListView(
           children: [

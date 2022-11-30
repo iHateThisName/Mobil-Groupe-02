@@ -20,7 +20,7 @@ class like_button extends StatelessWidget {
       likeBuilder: (bool isLiked) {
         return Icon(
           Icons.favorite,
-          color: isLiked ? Colors.pink : Colors.grey,
+          color: isLiked ? Colors.blue.withOpacity(0.7) : Colors.grey,
           size: 30,
         );
       },

@@ -67,8 +67,8 @@ class _MapPageState extends State<MapPage> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.black.withBlue(20),
+                    borderRadius: BorderRadius.circular(0),
                   ),
                   width: double.infinity,
                   height: double.infinity,
@@ -196,7 +196,7 @@ class _MapPageState extends State<MapPage> {
 
   /// Sets a custom icon for the markers.
   void setMarkerIcons() async {
-    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker3.png");
+    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker4.png");
   }
 
   /// initState method which is called when an object for the stateful widget is created and inserted.
@@ -232,7 +232,7 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           currentLocation == null
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.withOpacity(0.6))))
               : GoogleMap(
             initialCameraPosition: CameraPosition(
                 bearing: 0,
@@ -276,8 +276,8 @@ class _MapPageState extends State<MapPage> {
          )
         );
         },
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blueGrey,
+        backgroundColor: Colors.black.withBlue(30),
+        foregroundColor: Colors.blue.withOpacity(0.7),
         child: Icon(Icons.gps_fixed_outlined),
       ),
     );
