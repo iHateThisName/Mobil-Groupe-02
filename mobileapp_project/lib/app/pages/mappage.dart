@@ -276,8 +276,8 @@ class _MapPageState extends State<MapPage> {
          )
         );
         },
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blueGrey,
+        backgroundColor: Colors.black.withBlue(30),
+        foregroundColor: Colors.blue.withOpacity(0.7),
         child: Icon(Icons.gps_fixed_outlined),
       ),
     );
