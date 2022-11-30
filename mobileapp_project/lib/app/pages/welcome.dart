@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp_project/app/pages/landing_page.dart';
-import 'package:mobileapp_project/app/pages/welcome_page.dart';
+import 'package:mobileapp_project/app/models/welcome_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:location/location.dart';
+
+
 
 class OnWelcome extends StatefulWidget {
   @override
@@ -9,6 +12,22 @@ class OnWelcome extends StatefulWidget {
 }
 
 class _OnWelcomeState extends State<OnWelcome> {
+
+  bool isLocationEnabled = false;
+  bool isLocationEnabledChecked = false;
+  Location _locationTracker = Location();
+
+  Future<void> checkIsLocationEnabled() async {
+    isLocationEnabled = await _locationTracker.serviceEnabled();
+    setState(() {});
+    if (isLocationEnabled) {
+      await _locationTracker.getLocation();
+    }
+    setState(() {
+      isLocationEnabledChecked = true;
+    });
+  }
+
   List<WelcomePage> screens = <WelcomePage>[
     WelcomePage(
         img: 'images/hvor-kan-jeg-drite-logo.png',
@@ -17,7 +36,7 @@ class _OnWelcomeState extends State<OnWelcome> {
         bg: Colors.blueGrey,
         desc: ""),
     WelcomePage(
-      img: 'images/toiletmarker3.png',
+      img: 'images/toiletmarker4.png',
       text: "Se etter toalettmarkørene",
       button: Colors.blue,
       bg: Colors.blueGrey,
@@ -31,6 +50,7 @@ class _OnWelcomeState extends State<OnWelcome> {
   void initState() {
     _pageController = PageController(initialPage: 0);
     super.initState();
+    checkIsLocationEnabled();
   }
 
   @override
@@ -47,6 +67,8 @@ class _OnWelcomeState extends State<OnWelcome> {
 
   @override
   Widget build(BuildContext context) {
+    isLocationEnabledChecked;
+
     return Scaffold(
       backgroundColor: currentIndex % 2 == 0 ? Colors.white : Colors.blue,
       appBar: AppBar(

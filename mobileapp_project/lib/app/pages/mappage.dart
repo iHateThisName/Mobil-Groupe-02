@@ -234,6 +234,8 @@ class _MapPageState extends State<MapPage> {
           currentLocation == null
               ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.withOpacity(0.6))))
               : GoogleMap(
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
             initialCameraPosition: CameraPosition(
                 bearing: 0,
                 target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
