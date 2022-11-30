@@ -30,7 +30,7 @@ class ProfileTopPage extends StatelessWidget {
       // color: Colors.blueGrey,
       padding: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       decoration:
-      const BoxDecoration(color: Colors.blueGrey, borderRadius: borderRadius),
+      BoxDecoration(color: Colors.black.withBlue(30), borderRadius: borderRadius),
       child: ClipRRect(
         borderRadius: borderRadius,
         child: Image.asset(
@@ -48,6 +48,8 @@ class ProfileTopPage extends StatelessWidget {
       top: _coverImageHeight - _profileImageSize + _profileIconPadding,
       child: CircleAvatar(
           radius: _profileImageSize,
+          backgroundColor: Colors.black.withBlue(30),
+          foregroundColor: Colors.blue.withOpacity(1),
           child: Icon(
             Icons.person,
             size: _profileImageSize,

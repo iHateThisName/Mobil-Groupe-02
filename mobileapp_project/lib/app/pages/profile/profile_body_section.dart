@@ -26,10 +26,10 @@ class ProfileBodyPage extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(left: 50, right: 50),
         alignment: Alignment.center,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(
-                  color: Colors.blueGrey,
+                  color: Colors.black.withBlue(30),
                   width: 2,
               ),
           ),
@@ -46,13 +46,16 @@ class ProfileBodyPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
+        Icon(
           FontAwesomeIcons.trophy,
           size: 40,
+          color: Colors.black.withBlue(30),
         ),
         Text(
           " ${profile.score} points",
-          style: const TextStyle(fontSize: 25),
+          style: TextStyle(fontSize: 25,
+          color: Colors.black.withBlue(30)
+          ),
         )
       ],
     );
@@ -64,10 +67,11 @@ class ProfileBodyPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.person, size: 40),
+          Icon(Icons.person, size: 40, color: Colors.black.withBlue(30),),
           Text(
             profile.username.isNotEmpty ? " ${profile.username}" : "Anonymous user have timed out",
-            style: const TextStyle(fontSize: 25),
+            style: TextStyle(fontSize: 25,
+            color: Colors.black.withBlue(30)),
           )
         ],
       ),

@@ -96,6 +96,7 @@ flutter:
     - images/hkjd_logo (4).png
     - images/toiletmarker2.png
     - images/toiletmarker3.png
+    - images/toiletmarker4.png
     - assets/maptheme/dark_theme.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
