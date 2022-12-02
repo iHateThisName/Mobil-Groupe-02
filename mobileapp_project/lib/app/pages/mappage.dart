@@ -76,7 +76,7 @@ class _MapPageState extends State<MapPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.black.withBlue(20),
-                    borderRadius: BorderRadius.circular(0),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   width: double.infinity,
                   height: double.infinity,
@@ -91,16 +91,24 @@ class _MapPageState extends State<MapPage> {
                             const Icon(
                               Icons.wc_outlined,
                               color: Colors.white,
-                              size: 50,
+                              size: 40,
                             ),
                             const SizedBox(
                               width: 8.0,
                             ),
-                            Text(
-                              specify['address'],
-                              style:
-                              Theme.of(context).textTheme.headline6?.copyWith(
-                                color: Colors.white,
+                            Expanded(
+                              flex: 2,
+                              child: Center(
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Text(
+                                    specify['address'],
+                                    style:
+                                    Theme.of(context).textTheme.headline6?.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -260,7 +268,7 @@ class _MapPageState extends State<MapPage> {
           CustomInfoWindow(
             controller: _customInfoWindowController,
             height: 100,
-            width: 300,
+            width: 200,
             offset: 100,
           ),
         ],
