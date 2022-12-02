@@ -6,7 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import '../../custom_widgets/like_button.dart';
 import 'package:custom_info_window/custom_info_window.dart';
-import 'package:location/location.dart' as current_location;
+import 'package:geolocator/geolocator.dart';
 
 import 'package:mobileapp_project/app/pages/profile_page.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +34,15 @@ class _MapPageState extends State<MapPage> {
   String mapTheme = '';
   late BitmapDescriptor markerIcon;
   String inputAddress = '';
-  current_location.LocationData? currentLocation;
+  LatLng? initialPosition;
+
+  /// Gets the current location of the device
+  void _getInitialPosition() async{
+    var position = await GeolocatorPlatform.instance.getCurrentPosition();
+    setState(() {
+      initialPosition = LatLng(position.latitude, position.longitude);
+    });
+  }
 
   /// Dispose method that releases memory to the controller when the state object is removed.
   @override
@@ -204,7 +212,7 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     getMarkerData();
-    getCurrentLocation();
+    _getInitialPosition();
     setMarkerIcons();
     //refreshMarkers();
     DefaultAssetBundle.of(context).loadString('assets/maptheme/dark_theme.json').then((value) {
@@ -213,32 +221,22 @@ class _MapPageState extends State<MapPage> {
     super.initState();
   }
 
-  /// Gets the current location of the device
-  void getCurrentLocation() {
-    current_location.Location location = current_location.Location();
-    location.getLocation().then(
-            (location) {
-          currentLocation = location;
-        }
-    );
-  }
 
   /// Root widget of the map page.
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: buildAppBar(),
       body: Stack(
         children: [
-          currentLocation == null
-              ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.withOpacity(0.6))))
+          initialPosition == null
+            ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.withOpacity(0.6))))
               : GoogleMap(
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             initialCameraPosition: CameraPosition(
                 bearing: 0,
-                target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+                target: LatLng(initialPosition!.latitude, initialPosition!.longitude),
                 zoom: 16),
             // Hides the info window when you tap somewhere
             onTap: (position) {
@@ -273,7 +271,7 @@ class _MapPageState extends State<MapPage> {
         onPressed: () {
         mapController?.animateCamera(
          CameraUpdate.newCameraPosition(
-           CameraPosition(target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+           CameraPosition(target: LatLng(initialPosition!.latitude, initialPosition!.longitude),
            zoom: 16)
          )
         );

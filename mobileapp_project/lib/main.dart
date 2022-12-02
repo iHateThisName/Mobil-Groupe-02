@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'app/pages/landing_page.dart';
+import 'services/location_service.dart';
 import 'package:mobileapp_project/app/pages/welcome.dart';
 import 'package:mobileapp_project/app/pages/landing_page.dart';
 
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
   // The root of our application.
   @override
   Widget build(BuildContext context) {
+    LocationService.checkIsLocationEnabled();
     return Provider<AuthBase>(
       create: (context) => Auth(),
       child: MaterialApp(
