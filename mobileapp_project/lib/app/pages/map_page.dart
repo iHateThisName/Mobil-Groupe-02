@@ -8,8 +8,6 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:mobileapp_project/app/pages/profile_page.dart';
-import 'package:provider/provider.dart';
-import '../../services/database.dart';
 
 final _firestore = FirebaseFirestore.instance;
 
@@ -279,7 +277,7 @@ class _MapPageState extends State<MapPage> {
         },
         backgroundColor: Colors.black.withBlue(30),
         foregroundColor: Colors.blue.withOpacity(0.7),
-        child: Icon(Icons.gps_fixed_outlined),
+        child: const Icon(Icons.gps_fixed_outlined),
       ),
     );
   }
@@ -296,7 +294,7 @@ class _MapPageState extends State<MapPage> {
       leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
       actions: [
         IconButton(
-          onPressed: () => _showProfilePage(context),
+          onPressed: () => _showProfilePage(),
           icon: const Icon(Icons.person),
         ),
       ],
@@ -307,13 +305,12 @@ class _MapPageState extends State<MapPage> {
   /// Method that shows the profile page of the current user
   /// Gets user from the database.
 
-  void _showProfilePage(BuildContext context) {
+  void _showProfilePage() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         fullscreenDialog: true,
-        builder: (context) => Provider<Database>(
-            create: (_) => FireStoreDatabase(uid: widget.user.uid),
-            child: ProfilePage()),
+        //This context is the MaterialApp context not Map_page context
+        builder: (context) => ProfilePage(),
       ),
     );
   }
