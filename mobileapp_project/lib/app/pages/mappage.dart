@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +104,7 @@ class _MapPageState extends State<MapPage> {
                             ),
                           ],
                         ),
-                        const like_button(),
+                        const ApproveButton(approve: false),
                         /*SimpleDialogOption(
                           child: const Text('Delete',
                               style: TextStyle(color: Colors.blue,
