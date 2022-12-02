@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +8,7 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:mobileapp_project/app/pages/profile_page.dart';
-import 'package:provider/provider.dart';
-import '../../services/database.dart';
+
 final _firestore = FirebaseFirestore.instance;
 
 /// A class that represents our Map page.
@@ -37,7 +35,7 @@ class _MapPageState extends State<MapPage> {
   LatLng? initialPosition;
 
   /// Gets the current location of the device
-  void _getInitialPosition() async{
+  void _getInitialPosition() async {
     var position = await GeolocatorPlatform.instance.getCurrentPosition();
     setState(() {
       initialPosition = LatLng(position.latitude, position.longitude);
@@ -64,7 +62,8 @@ class _MapPageState extends State<MapPage> {
       icon: markerIcon,
 
       //We specify where to find the marker position by locating the geopoints in the database
-      position: LatLng(specify['location'].latitude, specify['location'].longitude),
+      position:
+          LatLng(specify['location'].latitude, specify['location'].longitude),
 
       // By using the custom info window package, an info window will show when clicking a marker.
       // Styled with colors, borders and icons.
@@ -76,48 +75,44 @@ class _MapPageState extends State<MapPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.black.withBlue(20),
-                    borderRadius: BorderRadius.circular(0),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   width: double.infinity,
                   height: double.infinity,
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.wc_outlined,
-                              color: Colors.white,
-                              size: 50,
-                            ),
-                            const SizedBox(
-                              width: 8.0,
-                            ),
-                            Text(
-                              specify['address'],
-                              style:
-                              Theme.of(context).textTheme.headline6?.copyWith(
-                                color: Colors.white,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Text(
+                                  specify['address'],
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                        const like_button(),
-                        /*SimpleDialogOption(
-                          child: const Text('Delete',
-                              style: TextStyle(color: Colors.blue,
-                                fontSize: 14,)),
-                          onPressed: () {
-                            null;
-                            Navigator.of(context).pop();
-                          },
-                        ),*/
-                      ],
-                    )
-                  ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Icon(
+                                Icons.wc_outlined,
+                                color: Color(0xE494BFE9),
+                                size: 40,
+                              ),
+                              ApproveButton(approve: false),
+                            ],
+                          ),
+                        ],
+                      )),
                 ),
               ),
             ],
@@ -146,7 +141,6 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-
   // TODO
   void deleteMarker(LatLng position) {
     markers.removeWhere((MarkerId, Marker) => markers == position);
@@ -163,7 +157,6 @@ class _MapPageState extends State<MapPage> {
       'address': inputAddress
     });
   }
-
 
   /// Dialog and option to add custom marker to the map
   /// depending on which address is added through the TextField
@@ -204,7 +197,8 @@ class _MapPageState extends State<MapPage> {
 
   /// Sets a custom icon for the markers.
   void setMarkerIcons() async {
-    markerIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "images/toiletmarker4.png");
+    markerIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), "images/toiletmarker4.png");
   }
 
   /// initState method which is called when an object for the stateful widget is created and inserted.
@@ -215,12 +209,13 @@ class _MapPageState extends State<MapPage> {
     _getInitialPosition();
     setMarkerIcons();
     //refreshMarkers();
-    DefaultAssetBundle.of(context).loadString('assets/maptheme/dark_theme.json').then((value) {
+    DefaultAssetBundle.of(context)
+        .loadString('assets/maptheme/dark_theme.json')
+        .then((value) {
       mapTheme = value;
     });
     super.initState();
   }
-
 
   /// Root widget of the map page.
   @override
@@ -230,37 +225,42 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           initialPosition == null
-            ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.withOpacity(0.6))))
+              ? Center(
+                  child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.blue.withOpacity(0.6))))
               : GoogleMap(
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            initialCameraPosition: CameraPosition(
-                bearing: 0,
-                target: LatLng(initialPosition!.latitude, initialPosition!.longitude),
-                zoom: 16),
-            // Hides the info window when you tap somewhere
-            onTap: (position) {
-              _customInfoWindowController.hideInfoWindow!();
-            },
-            // Redraws info window on the marker position every time we adjust the camera
-            onCameraMove: (position) {
-              _customInfoWindowController.onCameraMove!();
-            },
-            // We make the markers that are initialized in markers to show on the map
-            markers: Set<Marker>.of(markers.values),
-            // We set a normal map type
-            mapType: MapType.normal,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  initialCameraPosition: CameraPosition(
+                      bearing: 0,
+                      target: LatLng(initialPosition!.latitude,
+                          initialPosition!.longitude),
+                      zoom: 16),
+                  // Hides the info window when you tap somewhere
+                  onTap: (position) {
+                    _customInfoWindowController.hideInfoWindow!();
+                  },
+                  // Redraws info window on the marker position every time we adjust the camera
+                  onCameraMove: (position) {
+                    _customInfoWindowController.onCameraMove!();
+                  },
+                  // We make the markers that are initialized in markers to show on the map
+                  markers: Set<Marker>.of(markers.values),
+                  // We set a normal map type
+                  mapType: MapType.normal,
 
-            onMapCreated: (GoogleMapController controller){
-              mapController = controller;
-              controller.setMapStyle(mapTheme);
-              _customInfoWindowController.googleMapController = controller;
-            },
-          ),
+                  onMapCreated: (GoogleMapController controller) {
+                    mapController = controller;
+                    controller.setMapStyle(mapTheme);
+                    _customInfoWindowController.googleMapController =
+                        controller;
+                  },
+                ),
           CustomInfoWindow(
             controller: _customInfoWindowController,
             height: 100,
-            width: 300,
+            width: 200,
             offset: 100,
           ),
         ],
@@ -269,16 +269,15 @@ class _MapPageState extends State<MapPage> {
       floatingActionButton: FloatingActionButton(
         // Move camera position to the devices current location when clicking then floating action button
         onPressed: () {
-        mapController?.animateCamera(
-         CameraUpdate.newCameraPosition(
-           CameraPosition(target: LatLng(initialPosition!.latitude, initialPosition!.longitude),
-           zoom: 16)
-         )
-        );
+          mapController?.animateCamera(CameraUpdate.newCameraPosition(
+              CameraPosition(
+                  target: LatLng(
+                      initialPosition!.latitude, initialPosition!.longitude),
+                  zoom: 16)));
         },
         backgroundColor: Colors.black.withBlue(30),
         foregroundColor: Colors.blue.withOpacity(0.7),
-        child: Icon(Icons.gps_fixed_outlined),
+        child: const Icon(Icons.gps_fixed_outlined),
       ),
     );
   }
@@ -287,12 +286,15 @@ class _MapPageState extends State<MapPage> {
   AppBar buildAppBar() {
     return AppBar(
       foregroundColor: Colors.blue.withOpacity(0.5),
-      backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
-      title: Image.asset('images/my-image (1).png',),
+      backgroundColor:
+          Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
+      title: Image.asset(
+        'images/my-image (1).png',
+      ),
       leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
       actions: [
         IconButton(
-          onPressed: () => _showProfilePage(context),
+          onPressed: () => _showProfilePage(),
           icon: const Icon(Icons.person),
         ),
       ],
@@ -303,13 +305,12 @@ class _MapPageState extends State<MapPage> {
   /// Method that shows the profile page of the current user
   /// Gets user from the database.
 
-  void _showProfilePage(BuildContext context) {
+  void _showProfilePage() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         fullscreenDialog: true,
-        builder: (context) => Provider<Database>(
-            create: (_) => FireStoreDatabase(uid: widget.user.uid),
-            child: ProfilePage()),
+        //This context is the MaterialApp context not Map_page context
+        builder: (context) => ProfilePage(),
       ),
     );
   }

@@ -1,14 +1,10 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/services/api_path.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 abstract class Database {
+  void setUid(String currentUid);
   Future<void> createProfile(Profile profile);
   Future<Profile?> getProfile();
   Future<void> deleteProfile();
@@ -16,12 +12,15 @@ abstract class Database {
 }
 
 class FireStoreDatabase implements Database {
-  FireStoreDatabase({
-    required this.uid,
-  });
+  // The uid will be set by the landing page
+  // and it cant be final because if the user sings out it
+  // have to be possible to change the uid;
+  late String uid;
 
-  // final User user;
-  final String uid;
+  @override
+  void setUid(String setUid) {
+    uid = setUid;
+  }
 
   @override
   Future<Profile?> getProfile() async {
@@ -37,7 +36,6 @@ class FireStoreDatabase implements Database {
     }
     return null;
   }
-
 
   @override
   Future<void> createProfile(Profile profile) =>
@@ -71,5 +69,4 @@ class FireStoreDatabase implements Database {
     });
     return null;
   }
-
 }
