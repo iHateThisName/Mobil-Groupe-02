@@ -3,13 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/services/database.dart';
+import 'package:provider/provider.dart';
 import '../../custom_widgets/like_button.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:mobileapp_project/app/pages/profile_page.dart';
-
-final _firestore = FirebaseFirestore.instance;
 
 /// A class that represents our Map page.
 /// Creates a state subclass.
@@ -102,13 +102,13 @@ class _MapPageState extends State<MapPage> {
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Icon(
+                            children: [
+                              const Icon(
                                 Icons.wc_outlined,
                                 color: Color(0xE494BFE9),
                                 size: 40,
                               ),
-                              ApproveButton(approve: false),
+                              if (specifyId != null) ApproveButton(approve: false, markerID: specifyId),
                             ],
                           ),
                         ],
@@ -128,10 +128,10 @@ class _MapPageState extends State<MapPage> {
   }
 
   /// Gets the data of the markers position and address from the marker collection in the database.
-  getMarkerData() async {
-    final docRef = FirebaseFirestore.instance.collection('markers');
+  getMarkerData(Database database) async {
+    final docRef = database.getMarkersCollection();
     docRef.snapshots(includeMetadataChanges: true).listen((event) {
-      FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
+      database.getMarkersCollection().get().then((myMapData) {
         if (myMapData.docs.isNotEmpty) {
           for (int i = 0; i < myMapData.docs.length; i++) {
             initMarker(myMapData.docs[i].data(), myMapData.docs[i].id);
@@ -152,7 +152,7 @@ class _MapPageState extends State<MapPage> {
     List<Location> pos = await locationFromAddress(inputAddress);
     LatLng positionLatLng = LatLng(pos.first.latitude, pos.first.longitude);
 
-    return _firestore.collection('markers').add({
+    return FirebaseFirestore.instance.collection('markers').add({
       'location': GeoPoint(positionLatLng.latitude, positionLatLng.longitude),
       'address': inputAddress
     });
@@ -205,7 +205,8 @@ class _MapPageState extends State<MapPage> {
   /// Initializes the marker data, map theme and marker icons.
   @override
   void initState() {
-    getMarkerData();
+    final db = Provider.of<Database>(context, listen: false);
+    getMarkerData(db);
     _getInitialPosition();
     setMarkerIcons();
     //refreshMarkers();
