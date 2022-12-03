@@ -40,6 +40,12 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       initialPosition = LatLng(position.latitude, position.longitude);
     });
+
+    mapController?.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(target: LatLng(position.latitude, position.longitude),
+            zoom: 16)
+    )
+    );
   }
 
   /// Dispose method that releases memory to the controller when the state object is removed.
@@ -350,11 +356,7 @@ class _MapPageState extends State<MapPage> {
                       padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
                       child: FloatingActionButton(
                         onPressed: () {
-                          mapController?.animateCamera(CameraUpdate.newCameraPosition(
-                              CameraPosition(target: LatLng(initialPosition!.latitude, initialPosition!.longitude),
-                                  zoom: 16)
-                          )
-                          );
+                          _getInitialPosition();
                         },
                         backgroundColor: Colors.black.withBlue(30),
                         foregroundColor: Colors.blue.withOpacity(0.7),
