@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
+import 'package:mobileapp_project/services/authentication.dart';
+import 'package:provider/provider.dart';
+
+import '../services/database.dart';
 
 class ApproveButton extends StatelessWidget {
 
-  const ApproveButton({super.key, required this.approve});
+  const ApproveButton({super.key, required this.approve, required this.markerID});
 
   final bool? approve;
+  final String markerID;
 
 
   @override
   Widget build(BuildContext context) {
+    final db = Provider.of<Database>(context, listen: false);
+    // final auth = Provider.of<AuthBase>(context, listen: false);
     if (approve != null) {
       return LikeButton(
         size: 30,
@@ -22,6 +29,7 @@ class ApproveButton extends StatelessWidget {
         isLiked: approve,
         likeBuilder: (isLiked) {
           if (approve != null) {
+            db.thumbUpMarker(markerID);
             return Icon(
               Icons.thumb_up,
               color: isLiked ? Colors.blue.withOpacity(0.7) : Colors.grey,
