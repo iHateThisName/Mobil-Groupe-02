@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp_project/app/pages/mappage.dart';
 import 'package:mobileapp_project/app/pages/map_page.dart';
 import 'package:mobileapp_project/app/pages/welcome.dart';
 import 'package:mobileapp_project/services/authentication.dart';

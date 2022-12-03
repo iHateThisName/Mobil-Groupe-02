@@ -158,36 +158,76 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  /// Dialog and option to add custom marker to the map
+  /// Adds coordinates with the correct address to the marker collection in the database
+  /// Converts the current location address into latitude and longitude coordinates by using geocoding
+  Future<DocumentReference> _addGeoPointOnCurrentLocation() async {
+    String? currentAddress;
+    var position = await GeolocatorPlatform.instance.getCurrentPosition();
+    setState(() {
+      initialPosition = LatLng(position.latitude, position.longitude);
+    });
+
+    List<Placemark> placemark = (await placemarkFromCoordinates(initialPosition!.latitude, initialPosition!.longitude));
+
+    Placemark address = placemark[0];
+
+    setState(() {
+      currentAddress = '${address.street}';
+    });
+
+    return _firestore.collection('markers').add({
+      'location': GeoPoint(initialPosition!.latitude, initialPosition!.longitude),
+      'address': currentAddress
+    });
+  }
+
+  /// Dialog and option to search for address add custom marker to the map
   /// depending on which address is added through the TextField
-  Future addMarker() async {
+  Future searchAddress() async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text(
-            'Add Marker locaton',
-            style: TextStyle(fontSize: 17),
+          backgroundColor: Colors.black.withBlue(10),
+          title: Text(
+            'Legg til toalett på en valgfri addresse (Addressenavn må være presist)',
+            style: TextStyle(fontSize: 17, color: Colors.blue.withOpacity(0.5),),
           ),
           children: <Widget>[
             TextField(
+              style: TextStyle(color: Colors.black.withOpacity(0.8)),
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(hintText: 'Toalettaddresse',
+                  filled: true,
+                  fillColor: Colors.black.withBlue(5),
+                  hintStyle: TextStyle(color: Colors.white38,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 15),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white))
+              ),
               onChanged: (String enteredLocation) {
                 setState(() {
                   inputAddress = enteredLocation;
                 });
               },
             ),
-            SimpleDialogOption(
-              child: const Text('Add', style: TextStyle(color: Colors.blue)),
-              onPressed: () {
-                _addGeoPoint();
-                Navigator.of(context).pop();
-              },
-              /*onPressed: () async{
-                _addGeoPoint();
-                await Navigator.of(context).push(MaterialPageRoute(builder: (context) => MapPage()));
-                setState(() {});
-              },*/
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SimpleDialogOption(
+                  child: Text('Legg til toalett', style: TextStyle(color: Colors.blue.withOpacity(0.5))),
+                  onPressed: () {
+                    _addGeoPoint();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                SimpleDialogOption(
+                  child: Text('Avbryt', style: TextStyle(color: Colors.blue.withOpacity(0.5))),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             )
           ],
         );
@@ -263,21 +303,70 @@ class _MapPageState extends State<MapPage> {
             width: 200,
             offset: 100,
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Align(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            showDialog(context: context, builder: (context) {
+                              return SimpleDialog(
+                                title: const Text(
+                                  'Vil du legge til et toalett på nåværende plassering?',
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                                children: <Widget>[
+                                  SimpleDialogOption(
+                                    child: const Text('Legg til toalett', style: TextStyle(color: Colors.blue)),
+                                    onPressed: () {
+                                      _addGeoPointOnCurrentLocation();
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  SimpleDialogOption(
+                                    child: const Text('Avbryt', style: TextStyle(color: Colors.blue)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                            //_addGeoPointOnCurrentLocation();
+                          },
+                          backgroundColor: Colors.black.withBlue(30),
+                          foregroundColor: Colors.blue.withOpacity(0.7),
+                          child: const Icon(Icons.add),
+                        ),
+                      )
+                  ),
+                  Align(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                              CameraPosition(target: LatLng(initialPosition!.latitude, initialPosition!.longitude),
+                                  zoom: 16)
+                          )
+                          );
+                        },
+                        backgroundColor: Colors.black.withBlue(30),
+                        foregroundColor: Colors.blue.withOpacity(0.7),
+                        child: const Icon(Icons.gps_fixed_outlined),
+                      ),
+                    ) ,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: FloatingActionButton(
-        // Move camera position to the devices current location when clicking then floating action button
-        onPressed: () {
-          mapController?.animateCamera(CameraUpdate.newCameraPosition(
-              CameraPosition(
-                  target: LatLng(
-                      initialPosition!.latitude, initialPosition!.longitude),
-                  zoom: 16)));
-        },
-        backgroundColor: Colors.black.withBlue(30),
-        foregroundColor: Colors.blue.withOpacity(0.7),
-        child: const Icon(Icons.gps_fixed_outlined),
       ),
     );
   }
@@ -291,7 +380,7 @@ class _MapPageState extends State<MapPage> {
       title: Image.asset(
         'images/my-image (1).png',
       ),
-      leading: IconButton(onPressed: addMarker, icon: const Icon(Icons.add)),
+      leading: IconButton(onPressed: searchAddress, icon: const Icon(Icons.add)),
       actions: [
         IconButton(
           onPressed: () => _showProfilePage(),
