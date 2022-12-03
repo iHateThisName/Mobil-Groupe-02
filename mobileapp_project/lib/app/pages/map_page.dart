@@ -88,20 +88,18 @@ class _MapPageState extends State<MapPage> {
                   child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Flexible(
-                            child: Container(
-                              child: Text(
-                                specify['address'],
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.copyWith(
-                                  color: Colors.white,
-                                ),
-                                softWrap: true,
+                            child: Text(
+                              specify['address'],
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.copyWith(
+                                color: Colors.white,
                               ),
+                              softWrap: true,
                             ),
                           ),
                           Column(
