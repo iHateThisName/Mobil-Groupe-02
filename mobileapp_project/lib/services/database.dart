@@ -99,7 +99,6 @@ class FireStoreDatabase implements Database {
   @override
   void thumbUpMarker(String markerID) {
     var ref = FirebaseFirestore.instance.collection("markers").doc(markerID);
-    // ref.update({"usersThumbUp"})
     ref.set({
       "usersThumbUp" : {
         uid : true

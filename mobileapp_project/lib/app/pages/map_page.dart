@@ -34,6 +34,8 @@ class _MapPageState extends State<MapPage> {
   String inputAddress = '';
   LatLng? initialPosition;
 
+  late final Database database;
+
   /// Gets the current location of the device
   void _getInitialPosition() async {
     var position = await GeolocatorPlatform.instance.getCurrentPosition();
@@ -132,7 +134,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   /// Gets the data of the markers position and address from the marker collection in the database.
-  getMarkerData(Database database) async {
+  getMarkerData() async {
     final docRef = database.getMarkersCollection();
     docRef.snapshots(includeMetadataChanges: true).listen((event) {
       database.getMarkersCollection().get().then((myMapData) {
@@ -156,7 +158,7 @@ class _MapPageState extends State<MapPage> {
     List<Location> pos = await locationFromAddress(inputAddress);
     LatLng positionLatLng = LatLng(pos.first.latitude, pos.first.longitude);
 
-    return FirebaseFirestore.instance.collection('markers').add({
+    return database.getMarkersCollection().add({
       'location': GeoPoint(positionLatLng.latitude, positionLatLng.longitude),
       'address': inputAddress
     });
@@ -179,7 +181,7 @@ class _MapPageState extends State<MapPage> {
       currentAddress = '${address.street}';
     });
 
-    return _firestore.collection('markers').add({
+    return database.getMarkersCollection().add({
       'location': GeoPoint(initialPosition!.latitude, initialPosition!.longitude),
       'address': currentAddress
     });
@@ -249,8 +251,9 @@ class _MapPageState extends State<MapPage> {
   /// Initializes the marker data, map theme and marker icons.
   @override
   void initState() {
-    final db = Provider.of<Database>(context, listen: false);
-    getMarkerData(db);
+    database = Provider.of<Database>(context, listen: false);
+
+    getMarkerData();
     _getInitialPosition();
     setMarkerIcons();
     //refreshMarkers();

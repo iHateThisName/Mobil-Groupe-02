@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
-import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
 
 import '../services/database.dart';
 
 class ApproveButton extends StatelessWidget {
-
-  const ApproveButton({super.key, required this.approve, required this.markerID});
+  const ApproveButton(
+      {super.key, required this.approve, required this.markerID});
 
   final bool? approve;
   final String markerID;
-
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +19,7 @@ class ApproveButton extends StatelessWidget {
       return LikeButton(
         size: 30,
         circleColor:
-        const CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
+            const CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
         bubblesColor: const BubblesColor(
           dotPrimaryColor: Color(0xff33b5e5),
           dotSecondaryColor: Color(0xff0099cc),
@@ -41,8 +39,10 @@ class ApproveButton extends StatelessWidget {
     } else {
       // Marker information is loading or fails the return a progress indicator
       return const SizedBox(
-          height: 15, width: 15,
-          child: CircularProgressIndicator(),);
+        height: 15,
+        width: 15,
+        child: CircularProgressIndicator(),
+      );
     }
   }
 }
