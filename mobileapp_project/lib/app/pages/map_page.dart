@@ -75,50 +75,7 @@ class _MapPageState extends State<MapPage> {
       // Styled with colors, borders and icons.
       onTap: () {
         _customInfoWindowController.addInfoWindow!(
-          Column(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withBlue(20),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              specify['address'],
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  ?.copyWith(
-                                color: Colors.white,
-                              ),
-                              softWrap: true,
-                            ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const Icon(
-                                Icons.wc_outlined,
-                                color: Color(0xE494BFE9),
-                                size: 40,
-                              ),
-                              if (specifyId != null) ApproveButton(approve: false, markerID: specifyId),
-                            ],
-                          ),
-                        ],
-                      )),
-                ),
-              ),
-            ],
-          ),
+          buildInfoWindow(specify, specifyId),
           // Places the info window at the same position as the chosen marker
           LatLng(specify['location'].latitude, specify['location'].longitude),
         );
@@ -128,6 +85,7 @@ class _MapPageState extends State<MapPage> {
       markers[markerId] = marker;
     });
   }
+
 
   /// Gets the data of the markers position and address from the marker collection in the database.
   getMarkerData() async {
@@ -141,11 +99,6 @@ class _MapPageState extends State<MapPage> {
         }
       });
     });
-  }
-
-  // TODO
-  void deleteMarker(LatLng position) {
-    markers.removeWhere((MarkerId, Marker) => markers == position);
   }
 
   /// Adds coordinates with the correct address to the marker collection in the database
@@ -168,9 +121,7 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       initialPosition = LatLng(position.latitude, position.longitude);
     });
-
     List<Placemark> placemark = (await placemarkFromCoordinates(initialPosition!.latitude, initialPosition!.longitude));
-
     Placemark address = placemark[0];
 
     setState(() {
@@ -186,55 +137,60 @@ class _MapPageState extends State<MapPage> {
   /// Dialog and option to search for address add custom marker to the map
   /// depending on which address is added through the TextField
   Future searchAddress() async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          backgroundColor: Colors.black.withBlue(10),
-          title: Text(
-            'Legg til toalett på en valgfri addresse (Addressenavn må være presist)',
-            style: TextStyle(fontSize: 17, color: Colors.blue.withOpacity(0.5),),
-          ),
-          children: <Widget>[
-            TextField(
-              style: TextStyle(color: Colors.black.withOpacity(0.8)),
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(hintText: 'Toalettaddresse',
-                  filled: true,
-                  fillColor: Colors.black.withBlue(5),
-                  hintStyle: TextStyle(color: Colors.white38,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 15),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white))
-              ),
-              onChanged: (String enteredLocation) {
-                setState(() {
-                  inputAddress = enteredLocation;
-                });
-              },
+    await showAddressSearchDialog();
+  }
+
+  /// Builds the content of the address search option
+  Future<dynamic> showAddressSearchDialog() {
+    return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return SimpleDialog(
+        backgroundColor: Colors.black.withBlue(10),
+        title: Text(
+          'Legg til toalett på en valgfri addresse (Addressenavn må være presist)',
+          style: TextStyle(fontSize: 17, color: Colors.blue.withOpacity(0.5),),
+        ),
+        children: <Widget>[
+          TextField(
+            style: TextStyle(color: Colors.black.withOpacity(0.8)),
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(hintText: 'Toalettaddresse',
+                filled: true,
+                fillColor: Colors.black.withBlue(5),
+                hintStyle: TextStyle(color: Colors.white38,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 15),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white))
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SimpleDialogOption(
-                  child: Text('Legg til toalett', style: TextStyle(color: Colors.blue.withOpacity(0.5))),
-                  onPressed: () {
-                    _addGeoPoint();
-                    Navigator.of(context).pop();
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Text('Avbryt', style: TextStyle(color: Colors.blue.withOpacity(0.5))),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            )
-          ],
-        );
-      },
-    );
+            onChanged: (String enteredLocation) {
+              setState(() {
+                inputAddress = enteredLocation;
+              });
+            },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SimpleDialogOption(
+                child: Text('Legg til toalett', style: TextStyle(color: Colors.blue.withOpacity(0.5))),
+                onPressed: () {
+                  _addGeoPoint();
+                  Navigator.of(context).pop();
+                },
+              ),
+              SimpleDialogOption(
+                child: Text('Avbryt', style: TextStyle(color: Colors.blue.withOpacity(0.5))),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          )
+        ],
+      );
+    },
+  );
   }
 
   /// Sets a custom icon for the markers.
@@ -273,34 +229,7 @@ class _MapPageState extends State<MapPage> {
                   child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
                           Colors.blue.withOpacity(0.6))))
-              : GoogleMap(
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
-                  initialCameraPosition: CameraPosition(
-                      bearing: 0,
-                      target: LatLng(initialPosition!.latitude,
-                          initialPosition!.longitude),
-                      zoom: 16),
-                  // Hides the info window when you tap somewhere
-                  onTap: (position) {
-                    _customInfoWindowController.hideInfoWindow!();
-                  },
-                  // Redraws info window on the marker position every time we adjust the camera
-                  onCameraMove: (position) {
-                    _customInfoWindowController.onCameraMove!();
-                  },
-                  // We make the markers that are initialized in markers to show on the map
-                  markers: Set<Marker>.of(markers.values),
-                  // We set a normal map type
-                  mapType: MapType.normal,
-
-                  onMapCreated: (GoogleMapController controller) {
-                    mapController = controller;
-                    controller.setMapStyle(mapTheme);
-                    _customInfoWindowController.googleMapController =
-                        controller;
-                  },
-                ),
+              : buildGoogleMap(),
           CustomInfoWindow(
             controller: _customInfoWindowController,
             height: 100,
@@ -313,6 +242,89 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  /// Builds the google maps widget
+  GoogleMap buildGoogleMap() {
+    return GoogleMap(
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false,
+                initialCameraPosition: CameraPosition(
+                    bearing: 0,
+                    target: LatLng(initialPosition!.latitude,
+                        initialPosition!.longitude),
+                    zoom: 16),
+                // Hides the info window when you tap somewhere
+                onTap: (position) {
+                  _customInfoWindowController.hideInfoWindow!();
+                },
+                // Redraws info window on the marker position every time we adjust the camera
+                onCameraMove: (position) {
+                  _customInfoWindowController.onCameraMove!();
+                },
+                // We make the markers that are initialized in markers to show on the map
+                markers: Set<Marker>.of(markers.values),
+                // We set a normal map type
+                mapType: MapType.normal,
+
+                onMapCreated: (GoogleMapController controller) {
+                  mapController = controller;
+                  controller.setMapStyle(mapTheme);
+                  _customInfoWindowController.googleMapController =
+                      controller;
+                },
+              );
+  }
+
+  /// Builds the content of the custom info window
+  Column buildInfoWindow(specify, specifyId) {
+    return Column(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withBlue(20),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            width: double.infinity,
+            height: double.infinity,
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Flexible(
+                      child: Container(
+                        child: Text(
+                          specify['address'],
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.copyWith(
+                            color: Colors.white,
+                          ),
+                          softWrap: true,
+                        ),
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Icon(
+                          Icons.wc_outlined,
+                          color: Color(0xE494BFE9),
+                          size: 40,
+                        ),
+                        if (specifyId != null) ApproveButton(approve: false, markerID: specifyId),
+                      ],
+                    ),
+                  ],
+                )),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Builds both the floating action buttons on a row
   Row buildFABRow(BuildContext context) {
     return Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -399,7 +411,6 @@ class _MapPageState extends State<MapPage> {
 
   /// Method that shows the profile page of the current user
   /// Gets user from the database.
-
   void _showProfilePage() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
