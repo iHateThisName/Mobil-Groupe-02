@@ -11,9 +11,10 @@ abstract class Database {
   Future<Map<dynamic, dynamic>> getMarkersDataMap();
   CollectionReference<Map<String, dynamic>> getMarkersCollection();
 
-  void thumbUpMarker(String markerID);
+  Future<void> updateThumbsUpValue(String markerID, bool thumbUp);
+  Future<bool> isMarkerThumbsUp(String markerID);
+  // Stream<bool?> isMarkerThumbsUpStream(String markerID);
 }
-
 
 class FireStoreDatabase implements Database {
   // The uid will be set by the landing page
@@ -73,7 +74,7 @@ class FireStoreDatabase implements Database {
     });
     return null;
   }
-  
+
   @override
   Future<Map<dynamic, dynamic>> getMarkersDataMap() async {
     Map<dynamic, dynamic> map = {};
@@ -97,16 +98,39 @@ class FireStoreDatabase implements Database {
   }
 
   @override
-  void thumbUpMarker(String markerID) {
+  Future<void> updateThumbsUpValue(String markerID, bool thumbUp) async {
     var ref = FirebaseFirestore.instance.collection("markers").doc(markerID);
     ref.set({
-      "usersThumbUp" : {
-        uid : true
-      }
-    },
-    SetOptions(merge: true))
-        .then((_) => print("Successfully updated marker information, markerID: $markerID and uid: $uid"))
-        .catchError((error) => print("Failed: $error"));
+          "usersThumbUp" : {
+            uid: thumbUp
+          }
+        },
+        SetOptions(merge: true))
+        .then((_) => debugPrint(
+            "Successfully updated marker information, markerID: $markerID and uid: $uid"))
+        .catchError((error) => debugPrint("Failed at updating thumbUp value to $thumbUp in marker $markerID: $error"));
+
   }
 
+  @override
+  Future<bool> isMarkerThumbsUp(String markerID) async {
+    bool? thumbUp;
+
+    final reference = FirebaseFirestore.instance.collection("markers").doc(markerID);
+    var docSnapshot = await reference.get();
+
+    if (docSnapshot.exists) {
+      thumbUp = docSnapshot.data()!["usersThumbUp"][uid];
+      // if the nullcheck failes then the uid do not exist so set the value to false
+      thumbUp ??= false;
+
+      debugPrint("usersThumbUp on markerID: $markerID, "
+          "Current user id: $uid, "
+          "Every user that have pressed the thumb up button: ${docSnapshot.data()!["usersThumbUp"]} "
+          "Returning value: $thumbUp");
+    }
+
+
+    return thumbUp!;
+  }
 }
