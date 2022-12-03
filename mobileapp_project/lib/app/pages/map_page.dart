@@ -14,9 +14,7 @@ import 'package:mobileapp_project/app/pages/profile_page.dart';
 /// A class that represents our Map page.
 /// Creates a state subclass.
 class MapPage extends StatefulWidget {
-  const MapPage({Key? key, required this.user}) : super(key: key);
-
-  final User user;
+  const MapPage({Key? key}) : super(key: key);
 
   @override
   State<MapPage> createState() => _MapPageState();
