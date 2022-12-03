@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mobileapp_project/app/pages/welcome.dart';
 import 'package:mobileapp_project/services/authentication.dart';
+import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 import 'app/pages/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'app/pages/landing_page.dart';
+import 'services/location_service.dart';
 import 'package:mobileapp_project/app/pages/welcome.dart';
 import 'package:mobileapp_project/app/pages/landing_page.dart';
 
@@ -36,16 +38,22 @@ class MyApp extends StatelessWidget {
   // The root of our application.
   @override
   Widget build(BuildContext context) {
+    LocationService.checkIsLocationEnabled();
     return Provider<AuthBase>(
       create: (context) => Auth(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'ToiletApp',
-        theme: ThemeData(
-          primarySwatch: Colors.blueGrey,
-          backgroundColor: Colors.grey
+      // Need the database provider her to be able to provide for when using Navigator.push.
+      // Because the Navigator.push context is the MaterialApp context below.
+      child: Provider<Database>(
+        create: (context) => FireStoreDatabase(),
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'ToiletApp',
+          theme: ThemeData(
+            primarySwatch: Colors.blueGrey,
+            backgroundColor: Colors.grey
+          ),
+          home: isViewed != 0 ? const OnWelcome() : const LandingPage(),
         ),
-        home: isViewed != 0 ? OnWelcome() : LandingPage(),
       ),
     );
   }
