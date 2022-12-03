@@ -88,26 +88,24 @@ class _MapPageState extends State<MapPage> {
                   child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Expanded(
-                            flex: 1,
-                            child: Center(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Text(
-                                  specify['address'],
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline6
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                      ),
+                          Flexible(
+                            child: Container(
+                              child: Text(
+                                specify['address'],
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6
+                                    ?.copyWith(
+                                  color: Colors.white,
                                 ),
+                                softWrap: true,
                               ),
                             ),
                           ),
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: const [
                               Icon(
                                 Icons.wc_outlined,
@@ -319,6 +317,7 @@ class _MapPageState extends State<MapPage> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8),
                         child: FloatingActionButton(
+                          heroTag: "btn1",
                           onPressed: () {
                             showDialog(context: context, builder: (context) {
                               return SimpleDialog(
@@ -355,6 +354,7 @@ class _MapPageState extends State<MapPage> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
                       child: FloatingActionButton(
+                        heroTag: "btn2",
                         onPressed: () {
                           _getInitialPosition();
                         },
