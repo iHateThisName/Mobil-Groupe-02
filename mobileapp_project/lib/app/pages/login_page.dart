@@ -11,6 +11,7 @@ class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +25,8 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+  /// Builds the content of login page
+  /// [context] the build context
   Widget _buildContent(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -78,6 +81,9 @@ class LoginPage extends StatelessWidget {
   void logInWithFacebook() {
     // TODO: Auth with Google
   }
+
+  /// Logs the user in with an email
+  /// [context] the build context.
   void _logInWithEmail(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -87,6 +93,9 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+
+  /// Logs the user in as anonymous
+  /// [context] the build context
   Future<void> _logInAnonymously(BuildContext context) async {
     try {
       final auth = Provider.of<AuthBase>(context, listen: false);

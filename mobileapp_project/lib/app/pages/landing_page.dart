@@ -12,7 +12,8 @@ import 'login_page.dart';
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
 
-  // Root widget of the landing page.
+  /// Builds the landing page.
+  /// [context] the context.
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);

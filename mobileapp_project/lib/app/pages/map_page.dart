@@ -309,70 +309,74 @@ class _MapPageState extends State<MapPage> {
             width: 200,
             offset: 100,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Align(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: FloatingActionButton(
-                          heroTag: "btn1",
-                          onPressed: () {
-                            showDialog(context: context, builder: (context) {
-                              return SimpleDialog(
-                                title: const Text(
-                                  'Vil du legge til et toalett på nåværende plassering?',
-                                  style: TextStyle(fontSize: 17),
-                                ),
-                                children: <Widget>[
-                                  SimpleDialogOption(
-                                    child: const Text('Legg til toalett', style: TextStyle(color: Colors.blue)),
-                                    onPressed: () {
-                                      _addGeoPointOnCurrentLocation();
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  SimpleDialogOption(
-                                    child: const Text('Avbryt', style: TextStyle(color: Colors.blue)),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            });
-                            //_addGeoPointOnCurrentLocation();
-                          },
-                          backgroundColor: Colors.black.withBlue(30),
-                          foregroundColor: Colors.blue.withOpacity(0.7),
-                          child: const Icon(Icons.add),
-                        ),
-                      )
-                  ),
-                  Align(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
-                      child: FloatingActionButton(
-                        heroTag: "btn2",
-                        onPressed: () {
-                          _getInitialPosition();
-                        },
-                        backgroundColor: Colors.black.withBlue(30),
-                        foregroundColor: Colors.blue.withOpacity(0.7),
-                        child: const Icon(Icons.gps_fixed_outlined),
-                      ),
-                    ) ,
-                  ),
-                ],
-              ),
-            ],
-          ),
+          buildFABRow(context),
         ],
       ),
     );
+  }
+
+  Row buildFABRow(BuildContext context) {
+    return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Align(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: FloatingActionButton(
+                        heroTag: "btn1",
+                        onPressed: () {
+                          showDialog(context: context, builder: (context) {
+                            return SimpleDialog(
+                              title: const Text(
+                                'Vil du legge til et toalett på nåværende plassering?',
+                                style: TextStyle(fontSize: 17),
+                              ),
+                              children: <Widget>[
+                                SimpleDialogOption(
+                                  child: const Text('Legg til toalett', style: TextStyle(color: Colors.blue)),
+                                  onPressed: () {
+                                    _addGeoPointOnCurrentLocation();
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                SimpleDialogOption(
+                                  child: const Text('Avbryt', style: TextStyle(color: Colors.blue)),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          });
+                          //_addGeoPointOnCurrentLocation();
+                        },
+                        backgroundColor: Colors.black.withBlue(30),
+                        foregroundColor: Colors.blue.withOpacity(0.7),
+                        child: const Icon(Icons.add),
+                      ),
+                    )
+                ),
+                Align(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
+                    child: FloatingActionButton(
+                      heroTag: "btn2",
+                      onPressed: () {
+                        _getInitialPosition();
+                      },
+                      backgroundColor: Colors.black.withBlue(30),
+                      foregroundColor: Colors.blue.withOpacity(0.7),
+                      child: const Icon(Icons.gps_fixed_outlined),
+                    ),
+                  ) ,
+                ),
+              ],
+            ),
+          ],
+        );
   }
 
   /// Builds the appbar widget

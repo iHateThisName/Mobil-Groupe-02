@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 enum EmailSignInType { signIn, register }
 
+/// Authenticated the user by logging in or signing up
 class EmailSignInStateful extends StatefulWidget
     with EmailAndPasswordsValidators {
   EmailSignInStateful({super.key});
@@ -15,19 +16,27 @@ class EmailSignInStateful extends StatefulWidget
 }
 
 class _EmailSignInState extends State<EmailSignInStateful> {
+  /// TextEditingControllers - Gets the input from the user
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  /// Focus Nodes for the TextFields
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
+  /// Getters for the user inputs
   String get _email => _emailController.text;
   String get _password => _passwordController.text;
 
   EmailSignInType _formType = EmailSignInType.signIn;
 
+  /// Is true when user has submitted
   bool _submitted = false;
+
+  /// Is true when app is loading
   bool _isLoading = false;
 
+  /// Submits the form
   void _submit() async {
     setState(() {
       _submitted = true;
@@ -50,6 +59,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
     }
   }
 
+  /// The editing of email is done
   void _emailEditingComplete() {
     final newFocus = widget.emailValidator.isValid(_email)
         ? _passwordFocusNode
@@ -57,6 +67,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
     FocusScope.of(context).requestFocus(newFocus);
   }
 
+  /// Toggles form type
   void _toggleFormType() {
     setState(() {
       _submitted = false;
@@ -68,6 +79,8 @@ class _EmailSignInState extends State<EmailSignInStateful> {
     _passwordController.clear();
   }
 
+
+  /// A list of all the children widgets
   List<Widget> _buildChildren() {
     final primaryText =
         _formType == EmailSignInType.signIn ? "Sign in" : "Create an account";
@@ -86,14 +99,15 @@ class _EmailSignInState extends State<EmailSignInStateful> {
       const SizedBox(height: 8.0),
       CustomElevatedButton(
         onPressed: submitEnable ? _submit : null,
-        color: Colors.blueGrey,
+        color: Colors.blue.withOpacity(0.7),
         borderRadius: 4,
         child: Text(primaryText),
       ),
       const SizedBox(height: 8.0),
       TextButton(
         style: TextButton.styleFrom(
-          foregroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.black.withBlue(20),
         ),
         onPressed: !_isLoading ? _toggleFormType : null,
         child: Text(secondaryText),
@@ -101,6 +115,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
     ];
   }
 
+  /// Builds the Password TextField
   TextField _buildPasswordTextField() {
     bool showErrorText =
         _submitted && !widget.passwordValidator.isValid(_password);
@@ -108,7 +123,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
       controller: _passwordController,
       focusNode: _passwordFocusNode,
       decoration: InputDecoration(
-        labelText: "Password",
+        labelText: "Passord",
         errorText: showErrorText ? widget.invalidPasswordErrorText : null,
         enabled: _isLoading == false,
       ),
@@ -119,6 +134,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
     );
   }
 
+  /// Builds the email TextField
   TextField _buildEmailTextField() {
     bool showErrorText = _submitted && !widget.emailValidator.isValid(_email);
     return TextField(
@@ -144,6 +160,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
     });
   }
 
+  ///Root widget for the email signin page
   @override
   Widget build(BuildContext context) {
     return Padding(
