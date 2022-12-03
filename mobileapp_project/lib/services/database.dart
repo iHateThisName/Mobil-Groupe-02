@@ -8,8 +8,12 @@ abstract class Database {
   Future<void> createProfile(Profile profile);
   Future<Profile?> getProfile();
   Future<void> deleteProfile();
-  Future<QuerySnapshot<Map<String, dynamic>>?> getMarkersSnapshot();
+  Future<Map<dynamic, dynamic>> getMarkersDataMap();
+  CollectionReference<Map<String, dynamic>> getMarkersCollection();
+
+  void thumbUpMarker(String markerID);
 }
+
 
 class FireStoreDatabase implements Database {
   // The uid will be set by the landing page
@@ -69,4 +73,41 @@ class FireStoreDatabase implements Database {
     });
     return null;
   }
+  
+  @override
+  Future<Map<dynamic, dynamic>> getMarkersDataMap() async {
+    Map<dynamic, dynamic> map = {};
+    final docRef = FirebaseFirestore.instance.collection('markers');
+    docRef.snapshots(includeMetadataChanges: true).listen((event) {
+      FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
+        if (myMapData.docs.isNotEmpty) {
+          for (int i = 0; i < myMapData.docs.length; i++) {
+            map[myMapData.docs[i].data()] = myMapData.docs[i].id;
+          }
+        }
+      });
+    });
+    return map;
+  }
+
+  @override
+  CollectionReference<Map<String, dynamic>> getMarkersCollection() {
+    final reference = FirebaseFirestore.instance.collection('markers');
+    return reference;
+  }
+
+  @override
+  void thumbUpMarker(String markerID) {
+    var ref = FirebaseFirestore.instance.collection("markers").doc(markerID);
+    // ref.update({"usersThumbUp"})
+    ref.set({
+      "usersThumbUp" : {
+        uid : true
+      }
+    },
+    SetOptions(merge: true))
+        .then((_) => print("Successfully updated marker information, markerID: $markerID and uid: $uid"))
+        .catchError((error) => print("Failed: $error"));
+  }
+
 }
