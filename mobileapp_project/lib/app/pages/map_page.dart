@@ -163,12 +163,11 @@ class _MapPageState extends State<MapPage> {
           ),
           children: <Widget>[
             TextField(
-              style: TextStyle(color: Colors.black.withOpacity(0.8)),
+              style: TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                   hintText: 'Toalettaddresse',
                   filled: true,
-                  fillColor: Colors.black.withBlue(5),
                   hintStyle: TextStyle(
                       color: Colors.white38,
                       fontStyle: FontStyle.italic,
