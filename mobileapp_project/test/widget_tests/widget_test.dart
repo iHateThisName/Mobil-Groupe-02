@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobileapp_project/app/pages/login_page.dart';
+import 'package:mobileapp_project/app/pages/map_page.dart';
 import 'package:mobileapp_project/main.dart';
 import 'dart:ui';
 
 
 void main() {
   testWidgets('Widget tests', (WidgetTester tester) async {
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(LoginPage());
 
     // Expect to find one widget with type column
     var column = find.byType(Column);
@@ -26,11 +28,6 @@ void main() {
 
     var specificButton2 = find.text('Fortsett uten profil');
     expect(specificButton2, findsOneWidget);
-
-    var textField = find.byType(TextField);
-    expect(textField, findsOneWidget);
-    await tester.enterText(textField, 'test');
-    expect(find.text('test'), findsOneWidget);
 
   });
 
