@@ -18,4 +18,4 @@ Consistency: The overall “feel” of the website is replicated on all pages (e
 Accessibility: The application should be perceivable and understandable. It is also our goal to make it robust so that it works across several different devices.
 
 ## Original layout sketches
-[See our original wireframe sketches here](Mobile applications - Wireframe.pdf)
+[See our original wireframe sketches here](/sketches/)
