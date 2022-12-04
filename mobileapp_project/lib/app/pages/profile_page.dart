@@ -144,6 +144,11 @@ class _ProfilePageState extends State<ProfilePage> {
         await database.createProfile(
             Profile(username: authUsername, score: 0, email: user?.email));
       }
+
+      if (profile!.username.isEmpty) {
+        profile.username = authUsername;
+        await database.updateProfile(profile);
+      }
       _profileExist = true;
     } on FirebaseException catch (e) {
       print(e.stackTrace);
