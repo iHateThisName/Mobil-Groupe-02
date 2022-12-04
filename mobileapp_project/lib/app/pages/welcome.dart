@@ -19,7 +19,7 @@ class _OnWelcomeState extends State<OnWelcome> {
 
   List<WelcomePage> screens = <WelcomePage>[
     WelcomePage(
-        img: 'images/hvor-kan-jeg-drite-logo.png',
+        img: 'images/toalettapplogo.png',
         text: "Hjelp, jeg må på do!",
         button: Colors.blue,
         bg: Colors.blueGrey,

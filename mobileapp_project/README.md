@@ -1,16 +1,9 @@
-# mobileapp_project
+# Public_Toilet_Map
 
-A new Flutter project.
+Have you ever experienced needing a toilet, but you're too far from home?
+Look no further! Here's the app for you, developed specifically to bring you to the nearest toilet.
 
-## Getting Started
+Here you also get the ability to add toilets to your current location using the add button,
+or by using the search address option that puts a toilet marker on that exact address.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+##
