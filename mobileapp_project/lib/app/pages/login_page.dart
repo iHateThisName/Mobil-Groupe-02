@@ -34,7 +34,7 @@ class LoginPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const Image(image: AssetImage('images/toalettapplogo.png')),
+          const Image(image: AssetImage('images/hvor-kan-jeg-drite-logo.png')),
           const SizedBox(height: 10),
           const Text(
             'Logg inn',

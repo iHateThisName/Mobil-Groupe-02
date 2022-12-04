@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp_project/services/authentication.dart';
+import 'package:mobileapp_project/app/models/marker_model.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 import '../../custom_widgets/like_button.dart';
@@ -44,11 +44,8 @@ class _MapPageState extends State<MapPage> {
       initialPosition = LatLng(position.latitude, position.longitude);
     });
 
-    mapController?.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: LatLng(position.latitude, position.longitude),
-            zoom: 16)
-    )
-    );
+    mapController?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(position.latitude, position.longitude), zoom: 16)));
   }
 
   /// Dispose method that releases memory to the controller when the state object is removed.
@@ -89,7 +86,6 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-
   /// Gets the data of the markers position and address from the marker collection in the database.
   getMarkerData() async {
     final docRef = database.getMarkersCollection();
@@ -108,38 +104,41 @@ class _MapPageState extends State<MapPage> {
   /// Converts an input address into latitude and longitude coordinates by using geocoding
   Future<DocumentReference> _addGeoPoint() async {
     List<Location> pos = await locationFromAddress(inputAddress);
-    LatLng positionLatLng = LatLng(pos.first.latitude, pos.first.longitude);
 
-    return database.getMarkersCollection().add({
-      'location': GeoPoint(positionLatLng.latitude, positionLatLng.longitude),
-      'address': inputAddress
-    });
+    ToiletMarker marker = ToiletMarker(
+      author: widget.user!.uid,
+      upVotes: 0,
+      address: inputAddress,
+      location: GeoPoint(pos.first.latitude, pos.first.longitude),
+    );
+
+    return database.getMarkersCollection().add(marker.toMap());
   }
 
   /// Adds coordinates with the correct address to the marker collection in the database
   /// Converts the current location address into latitude and longitude coordinates by using geocoding
   Future<DocumentReference> _addGeoPointOnCurrentLocation() async {
-
-
     String? currentAddress;
     var position = await GeolocatorPlatform.instance.getCurrentPosition();
     setState(() {
       initialPosition = LatLng(position.latitude, position.longitude);
     });
-    List<Placemark> placemark = (await placemarkFromCoordinates(initialPosition!.latitude, initialPosition!.longitude));
+    List<Placemark> placemark = (await placemarkFromCoordinates(
+        initialPosition!.latitude, initialPosition!.longitude));
     Placemark address = placemark[0];
 
     setState(() {
       currentAddress = '${address.street}';
     });
 
-    return database.getMarkersCollection().add({
-      'location': GeoPoint(initialPosition!.latitude, initialPosition!.longitude),
-      'address': currentAddress,
-      "usersThumbUp" : {
-        "Author is ${widget.user!.uid}" : true
-      }
-    });
+    ToiletMarker marker = ToiletMarker(
+      author: widget.user!.uid,
+      upVotes: 0,
+      address: currentAddress,
+      location: GeoPoint(initialPosition!.latitude, initialPosition!.longitude),
+    );
+
+    return database.getMarkersCollection().add(marker.toMap());
   }
 
   /// Dialog and option to search for address add custom marker to the map
@@ -151,54 +150,61 @@ class _MapPageState extends State<MapPage> {
   /// Builds the content of the address search option
   Future<dynamic> showAddressSearchDialog() {
     return showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return SimpleDialog(
-        backgroundColor: Colors.black.withBlue(10),
-        title: Text(
-          'Legg til toalett på en valgfri addresse (Addressenavn må være presist)',
-          style: TextStyle(fontSize: 17, color: Colors.blue.withOpacity(0.5),),
-        ),
-        children: <Widget>[
-          TextField(
-            style: TextStyle(color: Colors.black.withOpacity(0.8)),
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(hintText: 'Toalettaddresse',
-                filled: true,
-                fillColor: Colors.black.withBlue(5),
-                hintStyle: TextStyle(color: Colors.white38,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 15),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white))
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          backgroundColor: Colors.black.withBlue(10),
+          title: Text(
+            'Legg til toalett på en valgfri addresse (Addressenavn må være presist)',
+            style: TextStyle(
+              fontSize: 17,
+              color: Colors.blue.withOpacity(0.5),
             ),
-            onChanged: (String enteredLocation) {
-              setState(() {
-                inputAddress = enteredLocation;
-              });
-            },
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SimpleDialogOption(
-                child: Text('Legg til toalett', style: TextStyle(color: Colors.blue.withOpacity(0.5))),
-                onPressed: () {
-                  _addGeoPoint();
-                  Navigator.of(context).pop();
-                },
-              ),
-              SimpleDialogOption(
-                child: Text('Avbryt', style: TextStyle(color: Colors.blue.withOpacity(0.5))),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          )
-        ],
-      );
-    },
-  );
+          children: <Widget>[
+            TextField(
+              style: TextStyle(color: Colors.black.withOpacity(0.8)),
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                  hintText: 'Toalettaddresse',
+                  filled: true,
+                  fillColor: Colors.black.withBlue(5),
+                  hintStyle: TextStyle(
+                      color: Colors.white38,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 15),
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white))),
+              onChanged: (String enteredLocation) {
+                setState(() {
+                  inputAddress = enteredLocation;
+                });
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SimpleDialogOption(
+                  child: Text('Legg til toalett',
+                      style: TextStyle(color: Colors.blue.withOpacity(0.5))),
+                  onPressed: () {
+                    _addGeoPoint();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                SimpleDialogOption(
+                  child: Text('Avbryt',
+                      style: TextStyle(color: Colors.blue.withOpacity(0.5))),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
   }
 
   /// Sets a custom icon for the markers.
@@ -253,33 +259,31 @@ class _MapPageState extends State<MapPage> {
   /// Builds the google maps widget
   GoogleMap buildGoogleMap() {
     return GoogleMap(
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                initialCameraPosition: CameraPosition(
-                    bearing: 0,
-                    target: LatLng(initialPosition!.latitude,
-                        initialPosition!.longitude),
-                    zoom: 16),
-                // Hides the info window when you tap somewhere
-                onTap: (position) {
-                  _customInfoWindowController.hideInfoWindow!();
-                },
-                // Redraws info window on the marker position every time we adjust the camera
-                onCameraMove: (position) {
-                  _customInfoWindowController.onCameraMove!();
-                },
-                // We make the markers that are initialized in markers to show on the map
-                markers: Set<Marker>.of(markers.values),
-                // We set a normal map type
-                mapType: MapType.normal,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: false,
+      initialCameraPosition: CameraPosition(
+          bearing: 0,
+          target: LatLng(initialPosition!.latitude, initialPosition!.longitude),
+          zoom: 16),
+      // Hides the info window when you tap somewhere
+      onTap: (position) {
+        _customInfoWindowController.hideInfoWindow!();
+      },
+      // Redraws info window on the marker position every time we adjust the camera
+      onCameraMove: (position) {
+        _customInfoWindowController.onCameraMove!();
+      },
+      // We make the markers that are initialized in markers to show on the map
+      markers: Set<Marker>.of(markers.values),
+      // We set a normal map type
+      mapType: MapType.normal,
 
-                onMapCreated: (GoogleMapController controller) {
-                  mapController = controller;
-                  controller.setMapStyle(mapTheme);
-                  _customInfoWindowController.googleMapController =
-                      controller;
-                },
-              );
+      onMapCreated: (GoogleMapController controller) {
+        mapController = controller;
+        controller.setMapStyle(mapTheme);
+        _customInfoWindowController.googleMapController = controller;
+      },
+    );
   }
 
   /// Builds the content of the custom info window
@@ -303,12 +307,10 @@ class _MapPageState extends State<MapPage> {
                       child: Container(
                         child: Text(
                           specify['address'],
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.copyWith(
-                            color: Colors.white,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.headline6?.copyWith(
+                                    color: Colors.white,
+                                  ),
                           softWrap: true,
                         ),
                       ),
@@ -321,7 +323,8 @@ class _MapPageState extends State<MapPage> {
                           color: Color(0xE494BFE9),
                           size: 40,
                         ),
-                        if (specifyId != null) ApproveButton(approve: false, markerID: specifyId),
+                        if (specifyId != null)
+                          ApproveButton(approve: false, markerID: specifyId),
                       ],
                     ),
                   ],
@@ -335,66 +338,69 @@ class _MapPageState extends State<MapPage> {
   /// Builds both the floating action buttons on a row
   Row buildFABRow(BuildContext context) {
     return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Align(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: FloatingActionButton(
-                        heroTag: "btn1",
-                        onPressed: () {
-                          showDialog(context: context, builder: (context) {
-                            return SimpleDialog(
-                              title: const Text(
-                                'Vil du legge til et toalett på nåværende plassering?',
-                                style: TextStyle(fontSize: 17),
-                              ),
-                              children: <Widget>[
-                                SimpleDialogOption(
-                                  child: const Text('Legg til toalett', style: TextStyle(color: Colors.blue)),
-                                  onPressed: () {
-                                    _addGeoPointOnCurrentLocation();
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                SimpleDialogOption(
-                                  child: const Text('Avbryt', style: TextStyle(color: Colors.blue)),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          });
-                          //_addGeoPointOnCurrentLocation();
-                        },
-                        backgroundColor: Colors.black.withBlue(30),
-                        foregroundColor: Colors.blue.withOpacity(0.7),
-                        child: const Icon(Icons.add),
-                      ),
-                    )
+            Align(
+                child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: FloatingActionButton(
+                heroTag: "btn1",
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return SimpleDialog(
+                          title: const Text(
+                            'Vil du legge til et toalett på nåværende plassering?',
+                            style: TextStyle(fontSize: 17),
+                          ),
+                          children: <Widget>[
+                            SimpleDialogOption(
+                              child: const Text('Legg til toalett',
+                                  style: TextStyle(color: Colors.blue)),
+                              onPressed: () {
+                                _addGeoPointOnCurrentLocation();
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            SimpleDialogOption(
+                              child: const Text('Avbryt',
+                                  style: TextStyle(color: Colors.blue)),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      });
+                  //_addGeoPointOnCurrentLocation();
+                },
+                backgroundColor: Colors.black.withBlue(30),
+                foregroundColor: Colors.blue.withOpacity(0.7),
+                child: const Icon(Icons.add),
+              ),
+            )),
+            Align(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
+                child: FloatingActionButton(
+                  heroTag: "btn2",
+                  onPressed: () {
+                    _getInitialPosition();
+                  },
+                  backgroundColor: Colors.black.withBlue(30),
+                  foregroundColor: Colors.blue.withOpacity(0.7),
+                  child: const Icon(Icons.gps_fixed_outlined),
                 ),
-                Align(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
-                    child: FloatingActionButton(
-                      heroTag: "btn2",
-                      onPressed: () {
-                        _getInitialPosition();
-                      },
-                      backgroundColor: Colors.black.withBlue(30),
-                      foregroundColor: Colors.blue.withOpacity(0.7),
-                      child: const Icon(Icons.gps_fixed_outlined),
-                    ),
-                  ) ,
-                ),
-              ],
+              ),
             ),
           ],
-        );
+        ),
+      ],
+    );
   }
 
   /// Builds the appbar widget
@@ -406,7 +412,8 @@ class _MapPageState extends State<MapPage> {
       title: Image.asset(
         'images/my-image (1).png',
       ),
-      leading: IconButton(onPressed: searchAddress, icon: const Icon(Icons.add)),
+      leading:
+          IconButton(onPressed: searchAddress, icon: const Icon(Icons.add)),
       actions: [
         IconButton(
           onPressed: () => _showProfilePage(),
