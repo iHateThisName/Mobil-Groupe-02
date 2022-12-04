@@ -15,9 +15,11 @@ import 'package:mobileapp_project/app/pages/profile_page.dart';
 /// A class that represents our Map page.
 /// Creates a state subclass.
 class MapPage extends StatefulWidget {
-  const MapPage({Key? key, required this.user}) : super(key: key);
+  const MapPage({Key? key, required this.user, required this.anonymous})
+      : super(key: key);
 
   final User? user;
+  final bool anonymous;
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -343,45 +345,48 @@ class _MapPageState extends State<MapPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Align(
-                child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: FloatingActionButton(
-                heroTag: "btn1",
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SimpleDialog(
-                          title: const Text(
-                            'Vil du legge til et toalett på nåværende plassering?',
-                            style: TextStyle(fontSize: 17),
-                          ),
-                          children: <Widget>[
-                            SimpleDialogOption(
-                              child: const Text('Legg til toalett',
-                                  style: TextStyle(color: Colors.blue)),
-                              onPressed: () {
-                                _addGeoPointOnCurrentLocation();
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            SimpleDialogOption(
-                              child: const Text('Avbryt',
-                                  style: TextStyle(color: Colors.blue)),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      });
-                  //_addGeoPointOnCurrentLocation();
-                },
-                backgroundColor: Colors.black.withBlue(30),
-                foregroundColor: Colors.blue.withOpacity(0.7),
-                child: const Icon(Icons.add),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: widget.anonymous
+                    ? null
+                    : FloatingActionButton(
+                        heroTag: "btn1",
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return SimpleDialog(
+                                  title: const Text(
+                                    'Vil du legge til et toalett på nåværende plassering?',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                  children: <Widget>[
+                                    SimpleDialogOption(
+                                      child: const Text('Legg til toalett',
+                                          style: TextStyle(color: Colors.blue)),
+                                      onPressed: () {
+                                        _addGeoPointOnCurrentLocation();
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    SimpleDialogOption(
+                                      child: const Text('Avbryt',
+                                          style: TextStyle(color: Colors.blue)),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                          //_addGeoPointOnCurrentLocation();
+                        },
+                        backgroundColor: Colors.black.withBlue(30),
+                        foregroundColor: Colors.blue.withOpacity(0.7),
+                        child: const Icon(Icons.add),
+                      ),
               ),
-            )),
+            ),
             Align(
               child: Padding(
                 padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
@@ -411,8 +416,10 @@ class _MapPageState extends State<MapPage> {
       title: Image.asset(
         'images/my-image (1).png',
       ),
-      leading:
-          IconButton(onPressed: searchAddress, icon: const Icon(Icons.add)),
+      leading: IconButton(
+        onPressed: widget.anonymous ? null : searchAddress,
+        icon: const Icon(Icons.add),
+      ),
       actions: [
         IconButton(
           onPressed: () => _showProfilePage(),

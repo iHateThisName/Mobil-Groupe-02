@@ -32,8 +32,7 @@ class LandingPage extends StatelessWidget {
           // Tell the database what uid to use
           db.setUid(user.uid);
           debugPrint("Showing the Map page");
-          return MapPage(user: user);
-
+          return MapPage(user: user, anonymous: auth.isAnonymous());
         }
         return const Scaffold(
           body: Center(
