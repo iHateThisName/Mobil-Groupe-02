@@ -41,10 +41,7 @@ class _MapPageState extends State<MapPage> {
 
   /// Gets the current location of the device
   void _getInitialPosition() async {
-    var position = await GeolocatorPlatform.instance.getCurrentPosition();
-    setState(() {
-      initialPosition = LatLng(position.latitude, position.longitude);
-    });
+    Position position = await database.getCurrentLocation();
 
     mapController?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(position.latitude, position.longitude), zoom: 16)));
@@ -104,7 +101,7 @@ class _MapPageState extends State<MapPage> {
 
   /// Adds coordinates with the correct address to the marker collection in the database
   /// Converts an input address into latitude and longitude coordinates by using geocoding
-  Future<DocumentReference> _addGeoPoint() async {
+  Future<DocumentReference> _addGeoPoint(inputAddress) async {
     List<Location> pos = await locationFromAddress(inputAddress);
 
     ToiletMarker marker = ToiletMarker(
@@ -112,32 +109,6 @@ class _MapPageState extends State<MapPage> {
       upVotes: 0,
       address: inputAddress,
       location: GeoPoint(pos.first.latitude, pos.first.longitude),
-    );
-
-    return database.getMarkersCollection().add(marker.toMap());
-  }
-
-  /// Adds coordinates with the correct address to the marker collection in the database
-  /// Converts the current location address into latitude and longitude coordinates by using geocoding
-  Future<DocumentReference> _addGeoPointOnCurrentLocation() async {
-    String? currentAddress;
-    var position = await GeolocatorPlatform.instance.getCurrentPosition();
-    setState(() {
-      initialPosition = LatLng(position.latitude, position.longitude);
-    });
-    List<Placemark> placemark = (await placemarkFromCoordinates(
-        initialPosition!.latitude, initialPosition!.longitude));
-    Placemark address = placemark[0];
-
-    setState(() {
-      currentAddress = '${address.street}';
-    });
-
-    ToiletMarker marker = ToiletMarker(
-      author: widget.user!.uid,
-      upVotes: 0,
-      address: currentAddress,
-      location: GeoPoint(initialPosition!.latitude, initialPosition!.longitude),
     );
 
     return database.getMarkersCollection().add(marker.toMap());
@@ -151,6 +122,7 @@ class _MapPageState extends State<MapPage> {
 
   /// Builds the content of the address search option
   Future<dynamic> showAddressSearchDialog() {
+    String enteredLocation = "";
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -176,10 +148,8 @@ class _MapPageState extends State<MapPage> {
                       fontSize: 15),
                   enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white))),
-              onChanged: (String enteredLocation) {
-                setState(() {
-                  inputAddress = enteredLocation;
-                });
+              onChanged: (changedEnteredLocation) {
+                enteredLocation = changedEnteredLocation;
               },
             ),
             Row(
@@ -189,7 +159,9 @@ class _MapPageState extends State<MapPage> {
                   child: Text('Legg til toalett',
                       style: TextStyle(color: Colors.blue.withOpacity(0.5))),
                   onPressed: () {
-                    _addGeoPoint();
+                    (enteredLocation.isNotEmpty)
+                        ? _addGeoPoint(enteredLocation)
+                        : null;
                     Navigator.of(context).pop();
                   },
                 ),
@@ -232,6 +204,11 @@ class _MapPageState extends State<MapPage> {
     super.initState();
   }
 
+  loadOnCurrentLocation() async {
+    Position location = await database.getCurrentLocation();
+    initialPosition = LatLng(location.latitude, location.longitude);
+  }
+
   /// Root widget of the map page.
   @override
   Widget build(BuildContext context) {
@@ -240,10 +217,21 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           initialPosition == null
-              ? Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.blue.withOpacity(0.6))))
+              ? FutureBuilder(
+                  future: loadOnCurrentLocation(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(
+                              Colors.blue.withOpacity(0.6)),
+                        ),
+                      );
+                    } else {
+                      return buildGoogleMap();
+                    }
+                  },
+                )
               : buildGoogleMap(),
           CustomInfoWindow(
             controller: _customInfoWindowController,
@@ -362,7 +350,8 @@ class _MapPageState extends State<MapPage> {
                                       child: const Text('Legg til toalett',
                                           style: TextStyle(color: Colors.blue)),
                                       onPressed: () {
-                                        _addGeoPointOnCurrentLocation();
+                                        // _addGeoPointOnCurrentLocation();
+                                        database.addGeoPointOnCurrentLocation();
                                         Navigator.of(context).pop();
                                       },
                                     ),

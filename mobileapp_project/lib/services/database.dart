@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobileapp_project/app/models/marker_model.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/services/api_path.dart';
 
@@ -40,6 +44,9 @@ abstract class Database {
 
   ///Field that updates the score
   Future<void> updateScore(int amount);
+
+  Future<void> addGeoPointOnCurrentLocation();
+  Future<Position> getCurrentLocation();
 }
 
 /// Represents the firestore database
@@ -169,5 +176,32 @@ class FireStoreDatabase implements Database {
     }
 
     return thumbUp!;
+  }
+
+  /// Adds coordinates with the correct address to the marker collection in the database
+  /// Converts the current location address into latitude and longitude coordinates by using geocoding
+  @override
+  Future<void> addGeoPointOnCurrentLocation() async {
+    Position position = await GeolocatorPlatform.instance.getCurrentPosition();
+    LatLng initialPosition = LatLng(position.latitude, position.longitude);
+
+    List<Placemark> placeMark = (await placemarkFromCoordinates(
+        initialPosition.latitude, initialPosition.longitude));
+    Placemark address = placeMark[0];
+
+    ToiletMarker marker = ToiletMarker(
+      author: uid,
+      upVotes: 0,
+      address: address.street,
+      location: GeoPoint(initialPosition.latitude, initialPosition.longitude),
+    );
+
+    await getMarkersCollection().add(marker.toMap());
+  }
+
+  @override
+  Future<Position> getCurrentLocation() async {
+    Position position = await GeolocatorPlatform.instance.getCurrentPosition();
+    return position;
   }
 }

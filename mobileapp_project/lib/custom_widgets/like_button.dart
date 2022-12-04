@@ -19,8 +19,6 @@ class _ApproveButtonState extends State<ApproveButton> {
   @override
   Widget build(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
-    // final auth = Provider.of<AuthBase>(context, listen: false);
-    // db.isMarkerThumbsUp(markerID);
 
     return FutureBuilder(
       future: db.isMarkerThumbsUp(widget.markerID),
@@ -30,8 +28,7 @@ class _ApproveButtonState extends State<ApproveButton> {
         }
 
         if (snapshot.hasError) {
-          //Todo error
-          return const Text("Error");
+          return const Text("💩 Error");
         }
 
         else {
