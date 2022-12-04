@@ -7,8 +7,7 @@ import 'package:provider/provider.dart';
 enum EmailSignInType { signIn, register }
 
 /// Authenticated the user by logging in or signing up
-class EmailSignInStateful extends StatefulWidget
-    with EmailAndPasswordsValidators {
+class EmailSignInStateful extends StatefulWidget with Validators {
   EmailSignInStateful({super.key});
 
   @override
@@ -61,7 +60,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
 
   /// The editing of email is done
   void _emailEditingComplete() {
-    final newFocus = widget.emailValidator.isValid(_email)
+    final newFocus = widget.validateEmail.isValid(_email)
         ? _passwordFocusNode
         : _emailFocusNode;
     FocusScope.of(context).requestFocus(newFocus);
@@ -79,7 +78,6 @@ class _EmailSignInState extends State<EmailSignInStateful> {
     _passwordController.clear();
   }
 
-
   /// A list of all the children widgets
   List<Widget> _buildChildren() {
     final primaryText =
@@ -88,8 +86,8 @@ class _EmailSignInState extends State<EmailSignInStateful> {
         ? "Need an account? Register"
         : "Have an account? Sign in";
 
-    bool submitEnable = widget.emailValidator.isValid(_email) &&
-        widget.emailValidator.isValid(_password) &&
+    bool submitEnable = widget.validateEmail.isValid(_email) &&
+        widget.validatePassword.isValid(_password) &&
         !_isLoading;
 
     return [
@@ -118,7 +116,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
   /// Builds the Password TextField
   TextField _buildPasswordTextField() {
     bool showErrorText =
-        _submitted && !widget.passwordValidator.isValid(_password);
+        _submitted && !widget.validatePassword.isValid(_password);
     return TextField(
       controller: _passwordController,
       focusNode: _passwordFocusNode,
@@ -136,7 +134,7 @@ class _EmailSignInState extends State<EmailSignInStateful> {
 
   /// Builds the email TextField
   TextField _buildEmailTextField() {
-    bool showErrorText = _submitted && !widget.emailValidator.isValid(_email);
+    bool showErrorText = _submitted && !widget.validateEmail.isValid(_email);
     return TextField(
       controller: _emailController,
       focusNode: _emailFocusNode,
