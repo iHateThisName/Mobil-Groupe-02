@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:mobileapp_project/services/authentication.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 import '../../custom_widgets/like_button.dart';
@@ -14,7 +15,9 @@ import 'package:mobileapp_project/app/pages/profile_page.dart';
 /// A class that represents our Map page.
 /// Creates a state subclass.
 class MapPage extends StatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
+  const MapPage({Key? key, required this.user}) : super(key: key);
+
+  final User? user;
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -116,6 +119,8 @@ class _MapPageState extends State<MapPage> {
   /// Adds coordinates with the correct address to the marker collection in the database
   /// Converts the current location address into latitude and longitude coordinates by using geocoding
   Future<DocumentReference> _addGeoPointOnCurrentLocation() async {
+
+
     String? currentAddress;
     var position = await GeolocatorPlatform.instance.getCurrentPosition();
     setState(() {
@@ -130,7 +135,10 @@ class _MapPageState extends State<MapPage> {
 
     return database.getMarkersCollection().add({
       'location': GeoPoint(initialPosition!.latitude, initialPosition!.longitude),
-      'address': currentAddress
+      'address': currentAddress,
+      "usersThumbUp" : {
+        "Author is ${widget.user!.uid}" : true
+      }
     });
   }
 
