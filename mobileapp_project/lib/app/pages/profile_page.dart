@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
   /// Used to inform that the button is pressed.
   bool _singOutPressed = false;
 
-  /// The username for the user that is log in.
+  /// The username for the user that is logged in.
   ///
   /// The username is the same as the email
   String _username = "null";
@@ -64,6 +64,9 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+
+  /// Builds the profile page
+  /// [context] the context
   @override
   Widget build(BuildContext context) {
 
@@ -102,6 +105,8 @@ class _ProfilePageState extends State<ProfilePage> {
         ));
   }
 
+
+  /// Progress indicator on the profile page that shows when page loads
   SizedBox _progressIndicator() {
 
     return const SizedBox(
@@ -111,6 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: CircularProgressIndicator()));
   }
 
+  /// Gets the content of profile page
   _getProfile(BuildContext context) async {
     try {
       final database = Provider.of<Database>(context, listen: false);

@@ -14,14 +14,17 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.blue.withOpacity(0.5),
-        backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
-        title: Image.asset('images/my-image (1).png',),
-        centerTitle: true,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          foregroundColor: Colors.blue.withOpacity(0.5),
+          backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
+          title: Image.asset('images/my-image (1).png',),
+          centerTitle: true,
       ),
-      body: _buildContent(context),
+        body: _buildContent(context),
+      )
     );
   }
 
@@ -72,8 +75,6 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-
-
 
   void logInWithGoogle() {
     // TODO: Auth with Google

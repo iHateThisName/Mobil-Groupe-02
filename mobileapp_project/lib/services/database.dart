@@ -3,25 +3,50 @@ import 'package:flutter/cupertino.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/services/api_path.dart';
 
+/// Represents the database needed for our app
 abstract class Database {
+
+  /// Sets the uID of the user
+  /// [currentUid] current uID to set
   void setUid(String currentUid);
+
+  /// Creates a profile
+  /// [profile] the profile
   Future<void> createProfile(Profile profile);
+
+  /// Updates the profile
+  /// [profile] the profile
   Future<void> updateProfile(Profile profile);
+
+  /// Gets the profile
   Future<Profile?> getProfile();
+
+  /// Deletes the profile
   Future<void> deleteProfile();
+
+  /// Gets map of marker data to use on the map page
   Future<Map<dynamic, dynamic>> getMarkersDataMap();
+
+  /// Gets the toilet markers collection from the database
   CollectionReference<Map<String, dynamic>> getMarkersCollection();
 
-
+  /// Updates thumbs up value depending on if the like button is clicked or not
+  /// Need specific markerId to know exactly which marker it is, and changes the bool from false to true when liked
+  /// [markerID] the marker id
+  /// [thumbUp] bool true or false
   Future<void> updateThumbsUpValue(String markerID, bool thumbUp);
+
+  /// Field that informs if the marker is thumbed up or not
   Future<bool> isMarkerThumbsUp(String markerID);
+
+  ///Field that updates the score
   Future<void> updateScore(int amount);
 }
 
+  /// Represents the firestore database
 class FireStoreDatabase implements Database {
-  // The uid will be set by the landing page
-  // and it cant be final because if the user sings out it
-  // have to be possible to change the uid;
+
+  /// A newly generated id for the user
   late String uid;
 
   @override
