@@ -1,16 +1,21 @@
-# mobileapp_project
+# Public_Toilet_Map
 
-A new Flutter project.
+Have you ever experienced needing a toilet, but you're too far from home?
+Look no further! Here's the app for you, developed specifically to bring you to the nearest toilet.
 
-## Getting Started
+Here you also get the ability to add toilets to your current location using the add button,
+or by using the search address option that puts a toilet marker on that exact address.
 
-This project is a starting point for a Flutter application.
+## Design guidelines
+Simplicity: The application is very simple. Not cluttered with text, only the same matching color theme that is white, blue and dark blue, and has an overall simplistic theme. Styled font simplicity, but also readability.
 
-A few resources to get you started if this is your first Flutter project:
+Navigability: The simplicity makes it easier for the users to navigate. Not too many options to confuse the user. Small amount of main buttons.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Conventionality: Placed the main navigation at the top of the page, so they will always know where to find content, and the main action buttions at the bottom so they're closest to their thumb.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Consistency: The overall “feel” of the app is replicated on all pages (e.g color, background, setup).
+
+Accessibility: The application should be perceivable and understandable. It is also our goal to make it robust so that it works across several different devices.
+
+## Original layout sketches
+[See our original wireframe sketches here](/sketches/)

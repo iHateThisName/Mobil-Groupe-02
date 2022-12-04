@@ -11,8 +11,10 @@ class EmailSignInPage extends StatelessWidget  {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign in'),
+        backgroundColor: Colors.black.withBlue(20),
+        title: const Text('Logg inn'),
         elevation: 2.0,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -22,7 +24,7 @@ class EmailSignInPage extends StatelessWidget  {
             ),
           ),
         ),
-    backgroundColor: Colors.grey[200],
+    backgroundColor: Colors.black.withBlue(20),
     );
   }
 }

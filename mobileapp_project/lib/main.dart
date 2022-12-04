@@ -26,7 +26,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isViewed = prefs.getInt('onWelcome');
-  runApp(const MyApp());
+  runApp(MaterialApp(home: const MyApp()));
 }
 
 /// A class that represents our whole application.

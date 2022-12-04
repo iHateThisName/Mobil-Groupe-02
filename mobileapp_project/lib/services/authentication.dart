@@ -69,11 +69,13 @@ class Auth implements AuthBase {
     return userCredential.user;
   }
 
+  /// Gets the current user
   @override
   User? getUser() {
     return _firebaseAuth.currentUser;
   }
 
+  /// Bool that returns if the user is anonymously logged in or not
   @override
   bool isAnonymous() {
     return anonymous;

@@ -4,26 +4,29 @@ import 'package:mobileapp_project/custom_widgets/custom_elevatedbutton.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
 
-
 /// A class that represents our log in page.
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.blue.withOpacity(0.5),
-        backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
-        title: Image.asset('images/my-image (1).png',),
-        centerTitle: true,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          foregroundColor: Colors.blue.withOpacity(0.5),
+          backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
+          title: Image.asset('images/my-image (1).png',),
+          centerTitle: true,
       ),
-      body: _buildContent(context),
+        body: _buildContent(context),
+      )
     );
   }
 
+  /// Builds the content of login page
+  /// [context] the build context
   Widget _buildContent(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -31,7 +34,7 @@ class LoginPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const Image(image: AssetImage('images/hvor-kan-jeg-drite-logo.png')),
+          const Image(image: AssetImage('images/toalettapplogo.png')),
           const SizedBox(height: 10),
           const Text(
             'Logg inn',
@@ -70,14 +73,15 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-
-
   void logInWithGoogle() {
     // TODO: Auth with Google
   }
   void logInWithFacebook() {
     // TODO: Auth with Google
   }
+
+  /// Logs the user in with an email
+  /// [context] the build context.
   void _logInWithEmail(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -87,12 +91,14 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+  /// Logs the user in as anonymous
+  /// [context] the build context
   Future<void> _logInAnonymously(BuildContext context) async {
     try {
       final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signInAnonymously();
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
   }
 }

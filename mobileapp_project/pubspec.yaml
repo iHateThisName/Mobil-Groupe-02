@@ -84,18 +84,13 @@ flutter:
   assets:
     - images/google-logo.png
     - images/facebook-logo.png
-    - images/hvor-kan-jeg-drite-logo.png
     - images/hvor-kan-jeg-drite-logo-profile.png
-    - images/hkjd_logo1.png
+    - images/toalettapplogo.png
     - images/my-image (1).png
     - images/my-image (2).png
     - images/logologo.png
     - images/hkjd_logo1-1.png
     - images/hkjd_logo (2).png
-    - images/hkjd_logo (3).png
-    - images/hkjd_logo (4).png
-    - images/toiletmarker2.png
-    - images/toiletmarker3.png
     - images/toiletmarker4.png
     - assets/maptheme/dark_theme.json
 

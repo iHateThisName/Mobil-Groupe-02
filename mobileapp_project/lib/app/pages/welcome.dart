@@ -2,24 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp_project/app/pages/landing_page.dart';
 import 'package:mobileapp_project/app/models/welcome_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:mobileapp_project/services/location_service.dart';
-
-
-
 
 class OnWelcome extends StatefulWidget {
   const OnWelcome({super.key});
 
   @override
-  _OnWelcomeState createState() => _OnWelcomeState();
+  OnWelcomeState createState() => OnWelcomeState();
 }
 
-class _OnWelcomeState extends State<OnWelcome> {
-
+class OnWelcomeState extends State<OnWelcome> {
   List<WelcomePage> screens = <WelcomePage>[
     WelcomePage(
-        img: 'images/hvor-kan-jeg-drite-logo.png',
+        img: 'images/toalettapplogo.png',
         text: "Hjelp, jeg må på do!",
         button: Colors.blue,
         bg: Colors.blueGrey,
@@ -56,7 +50,6 @@ class _OnWelcomeState extends State<OnWelcome> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: currentIndex % 2 == 0 ? Colors.white : Colors.blue,
       appBar: AppBar(

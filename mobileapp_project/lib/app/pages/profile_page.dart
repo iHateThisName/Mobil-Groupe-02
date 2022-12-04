@@ -1,8 +1,5 @@
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 import 'package:mobileapp_project/app/pages/profile/profile_body_section.dart';
 import 'package:mobileapp_project/app/pages/profile/profile_top_section.dart';
@@ -14,7 +11,7 @@ import 'package:provider/provider.dart';
 /// Creates a state subclass.
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage( {super.key});
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -30,18 +27,6 @@ class _ProfilePageState extends State<ProfilePage> {
   ///
   /// Used to inform that the button is pressed.
   bool _singOutPressed = false;
-
-  /// The username for the user that is log in.
-  ///
-  /// The username is the same as the email
-  String _username = "null";
-
-  /// The amount of points/score the user currently possesses, where '0' is default.
-  ///
-  /// Value is null if failed to retrieve the score from the user profile.
-  /// Value is also null when retrieving the user profile.
-  int? _score;
-
 
   Profile? _profile;
 
@@ -59,14 +44,16 @@ class _ProfilePageState extends State<ProfilePage> {
         await database.deleteProfile();
       }
       await auth.signOut();
-    } catch (e) {
-      print(e.toString());
+    } on FirebaseException catch (e) {
+      debugPrintStack(stackTrace: e.stackTrace);
     }
   }
 
+
+  /// Builds the profile page
+  /// [context] the context
   @override
   Widget build(BuildContext context) {
-
     if (!_profileExist && !_singOutPressed) {
       _createProfile(context);
       _getProfile(context);
@@ -74,8 +61,9 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
         appBar: AppBar(
           foregroundColor: Colors.blue.withOpacity(0.7),
-          backgroundColor: Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
-          title: Text('Profile page'),
+          backgroundColor:
+              Colors.black.withBlue(20), //Colors.black.withOpacity(0.85),
+          title: const Text('Profile page'),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
@@ -102,15 +90,16 @@ class _ProfilePageState extends State<ProfilePage> {
         ));
   }
 
-  SizedBox _progressIndicator() {
 
+  /// Progress indicator on the profile page that shows when page loads
+  SizedBox _progressIndicator() {
     return const SizedBox(
         width: 50,
         height: 50,
-        child: Center(
-            child: CircularProgressIndicator()));
+        child: Center(child: CircularProgressIndicator()));
   }
 
+  /// Gets the content of profile page
   _getProfile(BuildContext context) async {
     try {
       final database = Provider.of<Database>(context, listen: false);
@@ -120,7 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _profile = profile;
       });
     } on FirebaseException catch (e) {
-      print(e.stackTrace);
+      debugPrintStack(stackTrace: e.stackTrace);
     }
   }
 
@@ -144,9 +133,14 @@ class _ProfilePageState extends State<ProfilePage> {
         await database.createProfile(
             Profile(username: authUsername, score: 0, email: user?.email));
       }
+
+      if (profile!.username.isEmpty) {
+        profile.username = authUsername;
+        await database.updateProfile(profile);
+      }
       _profileExist = true;
     } on FirebaseException catch (e) {
-      print(e.stackTrace);
+      debugPrintStack(stackTrace: e.stackTrace);
     }
   }
 }
