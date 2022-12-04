@@ -5,7 +5,6 @@ import 'package:mobileapp_project/services/api_path.dart';
 
 /// Represents the database needed for our app
 abstract class Database {
-
   /// Sets the uID of the user
   /// [currentUid] current uID to set
   void setUid(String currentUid);
@@ -43,9 +42,8 @@ abstract class Database {
   Future<void> updateScore(int amount);
 }
 
-  /// Represents the firestore database
+/// Represents the firestore database
 class FireStoreDatabase implements Database {
-
   /// A newly generated id for the user
   late String uid;
 
@@ -89,8 +87,9 @@ class FireStoreDatabase implements Database {
         .collection("data")
         .doc("profile")
         .delete()
-        .then((doc) => print("Document Deleted"),
-            onError: (e) => print("Error updating document $e"));
+        .then((doc) => debugPrint("Document Deleted"),
+            onError: (e) => debugPrintStack(
+                stackTrace: e, label: ("Error updating document $e")));
   }
 
   Future<void> _setData(
@@ -98,14 +97,6 @@ class FireStoreDatabase implements Database {
     final reference = FirebaseFirestore.instance.doc(path);
     debugPrint("$path: $data");
     await reference.set(data);
-  }
-
-  @override
-  Future<QuerySnapshot<Map<String, dynamic>>?> getMarkersSnapshot() async {
-    FirebaseFirestore.instance.collection('markers').get().then((myMapData) {
-      return myMapData;
-    });
-    return null;
   }
 
   @override
@@ -133,23 +124,19 @@ class FireStoreDatabase implements Database {
   @override
   Future<void> updateThumbsUpValue(String markerID, bool thumbUp) async {
     var ref = FirebaseFirestore.instance.collection("markers").doc(markerID);
-    ref.set({
-          "usersThumbUp" : {
-            uid: thumbUp
-          }
-        },
-        SetOptions(merge: true))
+    ref
+        .set({
+          "usersThumbUp": {uid: thumbUp}
+        }, SetOptions(merge: true))
         .then((_) => debugPrint(
             "Successfully updated marker information, markerID: $markerID and uid: $uid"))
-        .catchError((error) => debugPrint("Failed at updating thumbUp value to $thumbUp in marker $markerID: $error"));
-
+        .catchError((error) => debugPrint(
+            "Failed at updating thumbUp value to $thumbUp in marker $markerID: $error"));
   }
 
   @override
   Future<void> updateScore(int amount) async {
     final Profile? profile = await getProfile();
-
-    print(amount);
 
     if (profile == null) {
       createProfile(Profile(username: "", score: amount, email: ""));
@@ -166,7 +153,8 @@ class FireStoreDatabase implements Database {
   Future<bool> isMarkerThumbsUp(String markerID) async {
     bool? thumbUp;
 
-    final reference = FirebaseFirestore.instance.collection("markers").doc(markerID);
+    final reference =
+        FirebaseFirestore.instance.collection("markers").doc(markerID);
     var docSnapshot = await reference.get();
 
     if (docSnapshot.exists) {

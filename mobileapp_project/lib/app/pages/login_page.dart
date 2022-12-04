@@ -4,13 +4,10 @@ import 'package:mobileapp_project/custom_widgets/custom_elevatedbutton.dart';
 import 'package:mobileapp_project/services/authentication.dart';
 import 'package:provider/provider.dart';
 
-
 /// A class that represents our log in page.
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +91,6 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-
   /// Logs the user in as anonymous
   /// [context] the build context
   Future<void> _logInAnonymously(BuildContext context) async {
@@ -102,7 +98,7 @@ class LoginPage extends StatelessWidget {
       final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signInAnonymously();
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
   }
 }

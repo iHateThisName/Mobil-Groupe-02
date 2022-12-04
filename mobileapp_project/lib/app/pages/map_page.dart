@@ -165,9 +165,9 @@ class _MapPageState extends State<MapPage> {
           ),
           children: <Widget>[
             TextField(
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   hintText: 'Toalettaddresse',
                   filled: true,
                   hintStyle: TextStyle(
@@ -211,7 +211,7 @@ class _MapPageState extends State<MapPage> {
   /// Sets a custom icon for the markers.
   void setMarkerIcons() async {
     markerIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), "images/toiletmarker4.png");
+        const ImageConfiguration(), "images/toiletmarker4.png");
   }
 
   /// initState method which is called when an object for the stateful widget is created and inserted.
@@ -305,15 +305,12 @@ class _MapPageState extends State<MapPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Flexible(
-                      child: Container(
-                        child: Text(
-                          specify['address'],
-                          style:
-                              Theme.of(context).textTheme.headline6?.copyWith(
-                                    color: Colors.white,
-                                  ),
-                          softWrap: true,
-                        ),
+                      child: Text(
+                        specify['address'],
+                        style: Theme.of(context).textTheme.headline6?.copyWith(
+                              color: Colors.white,
+                            ),
+                        softWrap: true,
                       ),
                     ),
                     Column(
@@ -437,7 +434,7 @@ class _MapPageState extends State<MapPage> {
       MaterialPageRoute<void>(
         fullscreenDialog: true,
         //This context is the MaterialApp context not Map_page context
-        builder: (context) => ProfilePage(),
+        builder: (context) => const ProfilePage(),
       ),
     );
   }

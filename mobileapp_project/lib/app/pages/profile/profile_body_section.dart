@@ -1,12 +1,9 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp_project/app/models/profile_model.dart';
 
 /// The body section of the profile page
 class ProfileBodyPage extends StatelessWidget {
-
   const ProfileBodyPage(this.profile, {super.key});
 
   final Profile profile;
@@ -34,10 +31,10 @@ class ProfileBodyPage extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           border: Border(
-              bottom: BorderSide(
-                  color: Colors.black.withBlue(30),
-                  width: 2,
-              ),
+            bottom: BorderSide(
+              color: Colors.black.withBlue(30),
+              width: 2,
+            ),
           ),
         ),
         child: Padding(
@@ -61,9 +58,7 @@ class ProfileBodyPage extends StatelessWidget {
         ),
         Text(
           " ${profile.score} points",
-          style: TextStyle(fontSize: 25,
-          color: Colors.black.withBlue(30)
-          ),
+          style: TextStyle(fontSize: 25, color: Colors.black.withBlue(30)),
         )
       ],
     );
@@ -77,15 +72,19 @@ class ProfileBodyPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.person, size: 40, color: Colors.black.withBlue(30),),
+          Icon(
+            Icons.person,
+            size: 40,
+            color: Colors.black.withBlue(30),
+          ),
           Text(
-            profile.username.isNotEmpty ? " ${profile.username}" : "Anonymous user have timed out",
-            style: TextStyle(fontSize: 25,
-            color: Colors.black.withBlue(30)),
+            profile.username.isNotEmpty
+                ? " ${profile.username}"
+                : "Anonymous user have timed out",
+            style: TextStyle(fontSize: 25, color: Colors.black.withBlue(30)),
           )
         ],
       ),
     );
   }
-
 }
