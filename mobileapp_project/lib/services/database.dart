@@ -6,14 +6,16 @@ import 'package:mobileapp_project/services/api_path.dart';
 abstract class Database {
   void setUid(String currentUid);
   Future<void> createProfile(Profile profile);
+  Future<void> updateProfile(Profile profile);
   Future<Profile?> getProfile();
   Future<void> deleteProfile();
   Future<Map<dynamic, dynamic>> getMarkersDataMap();
   CollectionReference<Map<String, dynamic>> getMarkersCollection();
 
+
   Future<void> updateThumbsUpValue(String markerID, bool thumbUp);
   Future<bool> isMarkerThumbsUp(String markerID);
-  // Stream<bool?> isMarkerThumbsUpStream(String markerID);
+  Future<void> updateScore(int amount);
 }
 
 class FireStoreDatabase implements Database {
@@ -44,7 +46,13 @@ class FireStoreDatabase implements Database {
 
   @override
   Future<void> createProfile(Profile profile) =>
-      _setData(path: APIPath.profile(uid, "profile"), data: profile.toMap());
+      _setData(path: APIPath.profile(uid), data: profile.toMap());
+
+  @override
+  Future<void> updateProfile(Profile profile) async {
+    final reference = FirebaseFirestore.instance.doc(APIPath.profile(uid));
+    await reference.update(profile.toMap());
+  }
 
   @override
   Future<void> deleteProfile() async {
@@ -63,7 +71,7 @@ class FireStoreDatabase implements Database {
   Future<void> _setData(
       {required String path, required Map<String, dynamic> data}) async {
     final reference = FirebaseFirestore.instance.doc(path);
-    print("$path: $data");
+    debugPrint("$path: $data");
     await reference.set(data);
   }
 
@@ -113,6 +121,23 @@ class FireStoreDatabase implements Database {
   }
 
   @override
+  Future<void> updateScore(int amount) async {
+    final Profile? profile = await getProfile();
+
+    print(amount);
+
+    if (profile == null) {
+      createProfile(Profile(username: "", score: amount, email: ""));
+    } else {
+      int score = profile.score;
+      score += amount;
+
+      profile.score = score;
+      updateProfile(profile);
+    }
+  }
+
+  @override
   Future<bool> isMarkerThumbsUp(String markerID) async {
     bool? thumbUp;
 
@@ -121,7 +146,7 @@ class FireStoreDatabase implements Database {
 
     if (docSnapshot.exists) {
       thumbUp = docSnapshot.data()!["usersThumbUp"][uid];
-      // if the nullcheck failes then the uid do not exist so set the value to false
+      // if the null-check fails then the uid do not exist so set the value to false
       thumbUp ??= false;
 
       debugPrint("usersThumbUp on markerID: $markerID, "
@@ -129,7 +154,6 @@ class FireStoreDatabase implements Database {
           "Every user that have pressed the thumb up button: ${docSnapshot.data()!["usersThumbUp"]} "
           "Returning value: $thumbUp");
     }
-
 
     return thumbUp!;
   }

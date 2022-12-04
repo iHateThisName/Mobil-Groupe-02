@@ -1,9 +1,9 @@
 /// Class that represents a profile of the user.
 
 class Profile {
-  final String username;
-  final int score; // Give the user a point system.
-  final String? email;
+  String username;
+  int score; // Give the user a point system.
+  String? email;
 
   Profile({
     required this.username,

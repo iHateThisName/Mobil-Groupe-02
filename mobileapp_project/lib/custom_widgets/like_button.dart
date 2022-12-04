@@ -56,6 +56,7 @@ class _ApproveButtonState extends State<ApproveButton> {
                 onPressed: () {
                   bool oldValue = snapshot.data as bool;
                   db.updateThumbsUpValue(widget.markerID, !oldValue);
+                  db.updateScore(!oldValue ? 1 : -1);
                   setState(() {});
                 },
 
