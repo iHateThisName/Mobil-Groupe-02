@@ -4,6 +4,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp_project/app/models/marker_model.dart';
+import 'package:mobileapp_project/custom_widgets/marker_to_current_position.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 import '../../custom_widgets/like_button.dart';
@@ -38,14 +39,6 @@ class _MapPageState extends State<MapPage> {
   LatLng? initialPosition;
 
   late final Database database;
-
-  /// Gets the current location of the device
-  void _getInitialPosition() async {
-    Position position = await database.getCurrentLocation();
-
-    mapController?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(position.latitude, position.longitude), zoom: 16)));
-  }
 
   /// Dispose method that releases memory to the controller when the state object is removed.
   @override
@@ -160,7 +153,7 @@ class _MapPageState extends State<MapPage> {
                       style: TextStyle(color: Colors.blue.withOpacity(0.5))),
                   onPressed: () {
                     (enteredLocation.isNotEmpty)
-                        ? _addGeoPoint(enteredLocation)
+                        ? database.addGeoPointToLocation(enteredLocation)
                         : null;
                     Navigator.of(context).pop();
                   },
@@ -180,6 +173,14 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  /// Gets the current location of the device
+  void _getInitialPosition() async {
+    Position position = await database.getCurrentLocation();
+
+    mapController?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(position.latitude, position.longitude), zoom: 16)));
+  }
+
   /// Sets a custom icon for the markers.
   void setMarkerIcons() async {
     markerIcon = await BitmapDescriptor.fromAssetImage(
@@ -191,11 +192,9 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     database = Provider.of<Database>(context, listen: false);
-
     getMarkerData();
     _getInitialPosition();
     setMarkerIcons();
-    //refreshMarkers();
     DefaultAssetBundle.of(context)
         .loadString('assets/maptheme/dark_theme.json')
         .then((value) {
@@ -239,7 +238,31 @@ class _MapPageState extends State<MapPage> {
             width: 200,
             offset: 100,
           ),
-          buildFABRow(context),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  AddMarkerToCurrentPositionButton(anonymous: widget.anonymous),
+                  Align(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
+                      child: FloatingActionButton(
+                        heroTag: "btn2",
+                        onPressed: () {
+                          _getInitialPosition();
+                        },
+                        backgroundColor: Colors.black.withBlue(30),
+                        foregroundColor: Colors.blue.withOpacity(0.7),
+                        child: const Icon(Icons.gps_fixed_outlined),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -316,78 +339,6 @@ class _MapPageState extends State<MapPage> {
                   ],
                 )),
           ),
-        ),
-      ],
-    );
-  }
-
-  /// Builds both the floating action buttons on a row
-  Row buildFABRow(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Align(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: widget.anonymous
-                    ? null
-                    : FloatingActionButton(
-                        heroTag: "btn1",
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return SimpleDialog(
-                                  title: const Text(
-                                    'Vil du legge til et toalett på nåværende plassering?',
-                                    style: TextStyle(fontSize: 17),
-                                  ),
-                                  children: <Widget>[
-                                    SimpleDialogOption(
-                                      child: const Text('Legg til toalett',
-                                          style: TextStyle(color: Colors.blue)),
-                                      onPressed: () {
-                                        // _addGeoPointOnCurrentLocation();
-                                        database.addGeoPointOnCurrentLocation();
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    SimpleDialogOption(
-                                      child: const Text('Avbryt',
-                                          style: TextStyle(color: Colors.blue)),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              });
-                          //_addGeoPointOnCurrentLocation();
-                        },
-                        backgroundColor: Colors.black.withBlue(30),
-                        foregroundColor: Colors.blue.withOpacity(0.7),
-                        child: const Icon(Icons.add),
-                      ),
-              ),
-            ),
-            Align(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8, bottom: 32, top: 8),
-                child: FloatingActionButton(
-                  heroTag: "btn2",
-                  onPressed: () {
-                    _getInitialPosition();
-                  },
-                  backgroundColor: Colors.black.withBlue(30),
-                  foregroundColor: Colors.blue.withOpacity(0.7),
-                  child: const Icon(Icons.gps_fixed_outlined),
-                ),
-              ),
-            ),
-          ],
         ),
       ],
     );

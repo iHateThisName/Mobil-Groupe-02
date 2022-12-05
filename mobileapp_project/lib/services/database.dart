@@ -47,6 +47,7 @@ abstract class Database {
 
   Future<void> addGeoPointOnCurrentLocation();
   Future<Position> getCurrentLocation();
+  Future<void> addGeoPointToLocation(inputAddress);
 }
 
 /// Represents the firestore database
@@ -203,5 +204,22 @@ class FireStoreDatabase implements Database {
   Future<Position> getCurrentLocation() async {
     Position position = await GeolocatorPlatform.instance.getCurrentPosition();
     return position;
+  }
+
+  /// Adds coordinates with the correct address to the marker collection in the database
+  /// Converts an input address into latitude and longitude coordinates by using geocoding
+  @override
+  Future<void> addGeoPointToLocation(inputAddress) async {
+    List<Location> pos = await locationFromAddress(inputAddress);
+
+    ToiletMarker marker = ToiletMarker(
+      author: uid,
+      upVotes: 0,
+      address: inputAddress,
+      location: GeoPoint(pos.first.latitude, pos.first.longitude),
+    );
+
+    getMarkersCollection().add(marker.toMap());
+
   }
 }
