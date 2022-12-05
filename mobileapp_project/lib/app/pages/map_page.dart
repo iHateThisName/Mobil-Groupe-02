@@ -31,11 +31,23 @@ class _MapPageState extends State<MapPage> {
   /// Fields including two controllers for the map and the marker info window, collection of key/value pair in markers (MarkerId, Marker), theme and icon.
   final CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
+
+  /// The Google Map controller for the google map instance
   GoogleMapController? mapController;
+
+  /// Map for marker and marker id
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  String mapTheme = '';
+
+  /// Field to hold the value for the map theme file
+  late String mapTheme;
+
+  /// Field icon that holds the marker icon image
   late BitmapDescriptor markerIcon;
+
+  /// Field that will hold the input address when adding a marker
   String inputAddress = '';
+
+  /// Field that will hold the initial position when map loads
   LatLng? initialPosition;
 
   late final Database database;
@@ -54,17 +66,17 @@ class _MapPageState extends State<MapPage> {
     var markerIdVal = specifyId;
     final MarkerId markerId = MarkerId(markerIdVal);
 
-    // Creates the marker
+    /// Creates the marker
     final Marker marker = Marker(
       markerId: markerId,
       icon: markerIcon,
 
-      //We specify where to find the marker position by locating the geopoints in the database
+      /// We specify where to find the marker position by locating the geopoints in the database
       position:
           LatLng(specify['location'].latitude, specify['location'].longitude),
 
-      // By using the custom info window package, an info window will show when clicking a marker.
-      // Styled with colors, borders and icons.
+      /// By using the custom info window package, an info window will show when clicking a marker.
+      /// Styled with colors, borders and icons.
       onTap: () {
         _customInfoWindowController.addInfoWindow!(
           buildInfoWindow(specify, specifyId),
@@ -192,7 +204,7 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     database = Provider.of<Database>(context, listen: false);
-    getMarkerData();
+    database.getMarkersDataMap();
     _getInitialPosition();
     setMarkerIcons();
     DefaultAssetBundle.of(context)
@@ -203,6 +215,7 @@ class _MapPageState extends State<MapPage> {
     super.initState();
   }
 
+  /// Loads the current location
   loadOnCurrentLocation() async {
     Position location = await database.getCurrentLocation();
     initialPosition = LatLng(location.latitude, location.longitude);
