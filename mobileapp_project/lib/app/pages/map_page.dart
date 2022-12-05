@@ -153,7 +153,7 @@ class _MapPageState extends State<MapPage> {
                       style: TextStyle(color: Colors.blue.withOpacity(0.5))),
                   onPressed: () {
                     (enteredLocation.isNotEmpty)
-                        ? _addGeoPoint(enteredLocation)
+                        ? database.addGeoPointToLocation(enteredLocation)
                         : null;
                     Navigator.of(context).pop();
                   },
