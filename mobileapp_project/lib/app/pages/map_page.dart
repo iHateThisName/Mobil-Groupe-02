@@ -114,7 +114,7 @@ class _MapPageState extends State<MapPage> {
       builder: (BuildContext context) {
         return SimpleDialog(
           backgroundColor: Colors.white,
-          title: Text(
+          title: const Text(
             'Legg til toalett på en valgfri addresse (Addressenavn må være presist)',
             style: TextStyle(
               fontSize: 17,
@@ -142,7 +142,7 @@ class _MapPageState extends State<MapPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 SimpleDialogOption(
-                  child: Text('Legg til toalett',
+                  child: const Text('Legg til toalett',
                       style: TextStyle(color: Colors.blue)),
                   onPressed: () {
                     (enteredLocation.isNotEmpty)
@@ -152,7 +152,7 @@ class _MapPageState extends State<MapPage> {
                   },
                 ),
                 SimpleDialogOption(
-                  child: Text('Avbryt',
+                  child: const Text('Avbryt',
                       style: TextStyle(color: Colors.blue)),
                   onPressed: () {
                     Navigator.of(context).pop();
