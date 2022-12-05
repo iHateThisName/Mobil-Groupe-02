@@ -4,11 +4,15 @@ import 'package:provider/provider.dart';
 
 import '../services/database.dart';
 
+/// The class that represents the like button widget
 class ApproveButton extends StatefulWidget {
   const ApproveButton(
       {super.key, required this.approve, required this.markerID});
 
+  /// Bool field that depends on if button has been liked or not
   final bool? approve;
+
+  /// Holds the specific marker id of the thumbs up
   final String markerID;
 
   @override
@@ -17,6 +21,9 @@ class ApproveButton extends StatefulWidget {
 
 class _ApproveButtonState extends State<ApproveButton> {
   @override
+
+  /// Builds the content of the like button widget
+  /// [context] the context
   Widget build(BuildContext context) {
     final db = Provider.of<Database>(context, listen: false);
 

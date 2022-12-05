@@ -6,10 +6,13 @@ import 'package:provider/provider.dart';
 
 import '../services/database.dart';
 
+/// Class that represents the button that adds marker to current position
 class AddMarkerToCurrentPositionButton extends StatefulWidget {
   const AddMarkerToCurrentPositionButton({Key? key, required this.anonymous})
       : super(key: key);
 
+  /// Bool that depends on if user is anonymous or not
+  /// Anon cannot add markers
   final bool anonymous;
 
   @override
@@ -17,10 +20,12 @@ class AddMarkerToCurrentPositionButton extends StatefulWidget {
 }
 
 class _AddMarkerToCurrentPositionButtonState extends State<AddMarkerToCurrentPositionButton> {
+  /// field that holds instance of the database to make it available
   late final Database database;
 
   @override
   void initState() {
+    /// Initializes the database
     database = Provider.of<Database>(context, listen: false);
     super.initState();
   }

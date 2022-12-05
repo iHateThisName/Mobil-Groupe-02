@@ -1,3 +1,4 @@
+/// Class that represents the API paths of user and profile
 class APIPath {
   static String profile(String uid) {
     return "users/$uid/data/profile";

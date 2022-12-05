@@ -1,16 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp_project/app/models/marker_model.dart';
 import 'package:mobileapp_project/custom_widgets/marker_to_current_position.dart';
 import 'package:mobileapp_project/services/database.dart';
 import 'package:provider/provider.dart';
 import '../../custom_widgets/like_button.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:geolocator/geolocator.dart';
-
 import 'package:mobileapp_project/app/pages/profile_page.dart';
 
 /// A class that represents our Map page.
@@ -31,11 +27,23 @@ class _MapPageState extends State<MapPage> {
   /// Fields including two controllers for the map and the marker info window, collection of key/value pair in markers (MarkerId, Marker), theme and icon.
   final CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
+
+  /// The Google Map controller for the google map instance
   GoogleMapController? mapController;
+
+  /// Map for marker and marker id
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  String mapTheme = '';
+
+  /// Field to hold the value for the map theme file
+  late String mapTheme;
+
+  /// Field icon that holds the marker icon image
   late BitmapDescriptor markerIcon;
+
+  /// Field that will hold the input address when adding a marker
   String inputAddress = '';
+
+  /// Field that will hold the initial position when map loads
   LatLng? initialPosition;
 
   late final Database database;
@@ -54,17 +62,17 @@ class _MapPageState extends State<MapPage> {
     var markerIdVal = specifyId;
     final MarkerId markerId = MarkerId(markerIdVal);
 
-    // Creates the marker
+    /// Creates the marker
     final Marker marker = Marker(
       markerId: markerId,
       icon: markerIcon,
 
-      //We specify where to find the marker position by locating the geopoints in the database
+      /// We specify where to find the marker position by locating the geopoints in the database
       position:
           LatLng(specify['location'].latitude, specify['location'].longitude),
 
-      // By using the custom info window package, an info window will show when clicking a marker.
-      // Styled with colors, borders and icons.
+      /// By using the custom info window package, an info window will show when clicking a marker.
+      /// Styled with colors, borders and icons.
       onTap: () {
         _customInfoWindowController.addInfoWindow!(
           buildInfoWindow(specify, specifyId),
@@ -92,21 +100,6 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  /// Adds coordinates with the correct address to the marker collection in the database
-  /// Converts an input address into latitude and longitude coordinates by using geocoding
-  Future<DocumentReference> _addGeoPoint(inputAddress) async {
-    List<Location> pos = await locationFromAddress(inputAddress);
-
-    ToiletMarker marker = ToiletMarker(
-      author: widget.user!.uid,
-      upVotes: 0,
-      address: inputAddress,
-      location: GeoPoint(pos.first.latitude, pos.first.longitude),
-    );
-
-    return database.getMarkersCollection().add(marker.toMap());
-  }
-
   /// Dialog and option to search for address add custom marker to the map
   /// depending on which address is added through the TextField
   Future searchAddress() async {
@@ -120,23 +113,23 @@ class _MapPageState extends State<MapPage> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          backgroundColor: Colors.black.withBlue(10),
-          title: Text(
+          backgroundColor: Colors.white,
+          title: const Text(
             'Legg til toalett på en valgfri addresse (Addressenavn må være presist)',
             style: TextStyle(
               fontSize: 17,
-              color: Colors.blue.withOpacity(0.5),
+              color: Colors.black,
             ),
           ),
           children: <Widget>[
             TextField(
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.black),
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
                   hintText: 'Toalettaddresse',
                   filled: true,
                   hintStyle: TextStyle(
-                      color: Colors.white38,
+                      color: Colors.black,
                       fontStyle: FontStyle.italic,
                       fontSize: 15),
                   enabledBorder: OutlineInputBorder(
@@ -149,8 +142,8 @@ class _MapPageState extends State<MapPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 SimpleDialogOption(
-                  child: Text('Legg til toalett',
-                      style: TextStyle(color: Colors.blue.withOpacity(0.5))),
+                  child: const Text('Legg til toalett',
+                      style: TextStyle(color: Colors.blue)),
                   onPressed: () {
                     (enteredLocation.isNotEmpty)
                         ? database.addGeoPointToLocation(enteredLocation)
@@ -159,8 +152,8 @@ class _MapPageState extends State<MapPage> {
                   },
                 ),
                 SimpleDialogOption(
-                  child: Text('Avbryt',
-                      style: TextStyle(color: Colors.blue.withOpacity(0.5))),
+                  child: const Text('Avbryt',
+                      style: TextStyle(color: Colors.blue)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -203,6 +196,7 @@ class _MapPageState extends State<MapPage> {
     super.initState();
   }
 
+  /// Loads the current location
   loadOnCurrentLocation() async {
     Position location = await database.getCurrentLocation();
     initialPosition = LatLng(location.latitude, location.longitude);

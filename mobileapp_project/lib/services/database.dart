@@ -55,11 +55,13 @@ class FireStoreDatabase implements Database {
   /// A newly generated id for the user
   late String uid;
 
+  /// Sets the uid
   @override
   void setUid(String setUid) {
     uid = setUid;
   }
 
+  /// Gets the profile asynchronously
   @override
   Future<Profile?> getProfile() async {
     final path = APIPath.profiles(uid);
@@ -75,16 +77,19 @@ class FireStoreDatabase implements Database {
     return null;
   }
 
+  /// Creates the profile
   @override
   Future<void> createProfile(Profile profile) =>
       _setData(path: APIPath.profile(uid), data: profile.toMap());
 
+  /// Updates the profile
   @override
   Future<void> updateProfile(Profile profile) async {
     final reference = FirebaseFirestore.instance.doc(APIPath.profile(uid));
     await reference.update(profile.toMap());
   }
 
+  /// Deletes the profile
   @override
   Future<void> deleteProfile() async {
     debugPrint("Deleting user with uid: $uid");
@@ -100,6 +105,7 @@ class FireStoreDatabase implements Database {
                 stackTrace: e, label: ("Error updating document $e")));
   }
 
+  /// Create data to database
   Future<void> _setData(
       {required String path, required Map<String, dynamic> data}) async {
     final reference = FirebaseFirestore.instance.doc(path);
@@ -107,6 +113,8 @@ class FireStoreDatabase implements Database {
     await reference.set(data);
   }
 
+  /// Gets map of the marker data from the database
+  ///
   @override
   Future<Map<dynamic, dynamic>> getMarkersDataMap() async {
     Map<dynamic, dynamic> map = {};
@@ -123,12 +131,14 @@ class FireStoreDatabase implements Database {
     return map;
   }
 
+  /// Gets the marker collection from the database
   @override
   CollectionReference<Map<String, dynamic>> getMarkersCollection() {
     final reference = FirebaseFirestore.instance.collection('markers');
     return reference;
   }
 
+  /// Updates the thumbs up value o the marker
   @override
   Future<void> updateThumbsUpValue(String markerID, bool thumbUp) async {
     var ref = FirebaseFirestore.instance.collection("markers").doc(markerID);
@@ -142,6 +152,7 @@ class FireStoreDatabase implements Database {
             "Failed at updating thumbUp value to $thumbUp in marker $markerID: $error"));
   }
 
+  /// Updates the score of the user
   @override
   Future<void> updateScore(int amount) async {
     final Profile? profile = await getProfile();
@@ -157,6 +168,7 @@ class FireStoreDatabase implements Database {
     }
   }
 
+  /// Method that returns a liked marker if it is liked
   @override
   Future<bool> isMarkerThumbsUp(String markerID) async {
     bool? thumbUp;
@@ -200,6 +212,7 @@ class FireStoreDatabase implements Database {
     await getMarkersCollection().add(marker.toMap());
   }
 
+  /// Gets the current location
   @override
   Future<Position> getCurrentLocation() async {
     Position position = await GeolocatorPlatform.instance.getCurrentPosition();
